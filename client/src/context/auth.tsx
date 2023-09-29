@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 
 interface User {
-  user: Record<string, any>;
-  dispatch: any;
+  user: null | Record<string, any>;
+  dispatch: React.Dispatch<any>;
 }
 
-const AuthContext = createContext<null | User>(null);
+const AuthContext = createContext<User>({} as User);
 
-const initialState = {
+const initialState: Omit<User, "dispatch"> = {
   user: null,
 };
 
@@ -28,7 +28,7 @@ const authReducer = (state: any, action: any) => {
   }
 };
 
-const AuthProvider = (props: any) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
@@ -42,7 +42,9 @@ const AuthProvider = (props: any) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: state.user, dispatch }} {...props} />
+    <AuthContext.Provider value={{ user: state.user, dispatch }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
