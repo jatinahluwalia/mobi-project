@@ -19,7 +19,7 @@ const checkAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     var _a;
     try {
         const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
-        const decoded = jsonwebtoken_1.default.verify(String(token), String(process.env.JWT_SECRET));
+        const decoded = jsonwebtoken_1.default.verify(String(token), String(process.env.JWT_SECRET))._id;
         const user = yield user_model_1.default.findById(decoded);
         if (!user) {
             throw new Error();

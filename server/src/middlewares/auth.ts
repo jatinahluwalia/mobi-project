@@ -9,7 +9,9 @@ export const checkAuth = async (
 ) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-    const decoded = jwt.verify(String(token), String(process.env.JWT_SECRET));
+    const decoded = (
+      jwt.verify(String(token), String(process.env.JWT_SECRET)) as any
+    )._id;
     const user = await User.findById(decoded);
     if (!user) {
       throw new Error();

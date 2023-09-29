@@ -25,10 +25,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    gender: {
-      type: String,
-      required: true,
-    },
     role: {
       type: String,
       default: "user",
@@ -42,7 +38,6 @@ userSchema.statics.signup = async function ({
   email,
   password,
   phone,
-  gender,
 }: Signup) {
   if (!validator.isEmail(email)) {
     throw new Error("Please enter a valid email");
@@ -57,12 +52,8 @@ userSchema.statics.signup = async function ({
   if (!validator.isMobilePhone(phone)) {
     throw new Error("Please enter valid mobile number");
   }
-
   if (!validator.isAlpha(fullName)) {
     throw new Error("Please enter valid name");
-  }
-  if (!gender) {
-    throw new Error("Please enter a gender");
   }
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -72,7 +63,6 @@ userSchema.statics.signup = async function ({
     email,
     hashedPassword,
     phone,
-    gender,
   });
   return { message: "Signed up successfully" };
 };
@@ -94,9 +84,14 @@ userSchema.statics.login = async function (email: string, password: string) {
   if (!matched) {
     throw new Error("Incorrect password.");
   }
-  const token = jwt.sign(_id, process.env.JWT_SECRET || "uirbvvubvuebuebu", {
-    expiresIn: process.env.EXPIRES_IN || "1d",
-  });
+  const token = jwt.sign(
+    { _id: _id.toString() },
+    process.env.JWT_SECRET || "uirbvvubvuebuebu",
+    {
+      expiresIn: "1d",
+    }
+  );
+
   return { _id, token };
 };
 

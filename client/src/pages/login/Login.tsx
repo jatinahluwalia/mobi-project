@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Link, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  if (auth?.user) navigate("/dashboard");
   const schema = z.object({
     email: z.string().email("Please enter a valid email"),
     password: z
@@ -69,10 +68,15 @@ const Login = () => {
           label="Password"
           type="password"
         />
+        <Typography variant="body2">
+          Don't have an account?{" "}
+          <Link onClick={() => navigate("/signup")} className="cursor-pointer">
+            Signup
+          </Link>
+        </Typography>
         <Button
           type="button"
           variant="contained"
-          href="/login"
           onClick={handleSubmit(onSubmit)}
         >
           Login

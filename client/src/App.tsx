@@ -9,6 +9,7 @@ import { useAuth } from "./context/auth";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import axios from "axios";
+import Signup from "./pages/signup/Signup";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -20,7 +21,14 @@ function App() {
           path="/"
           element={auth?.user ? <Navigate to={"/dashboard"} /> : <Home />}
         />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={!auth?.user ? <Login /> : <Navigate to={"/dashboard"} />}
+        />
+        <Route
+          path="/signup"
+          element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
+        />
       </Routes>
     </Router>
   );

@@ -3,5 +3,4 @@ export interface Signup {
   email: string;
   phone: string;
   password: string;
-  gender: string;
 }
