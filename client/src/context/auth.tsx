@@ -1,28 +1,16 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
+import { Action, Context, User } from "../types/provider";
 
-interface User {
-  user: null | Record<string, any>;
-  dispatch: React.Dispatch<any>;
-}
+const AuthContext = createContext<Context>({} as Context);
 
-const AuthContext = createContext<User>({} as User);
+const initialState: User = null;
 
-const initialState: Omit<User, "dispatch"> = {
-  user: null,
-};
-
-const authReducer = (state: any, action: any) => {
+const authReducer = (state: User, action: Action) => {
   switch (action.type) {
     case "LOGIN":
-      return {
-        ...state,
-        user: action.payload,
-      };
+      return action.payload;
     case "LOGOUT":
-      return {
-        ...state,
-        user: null,
-      };
+      return null;
     default:
       return state;
   }
@@ -42,12 +30,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: state.user, dispatch }}>
+    <AuthContext.Provider value={{ user: state, dispatch: dispatch }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-const useAuth = () => useContext(AuthContext);
-
-export { AuthProvider, useAuth };
+export { AuthProvider, AuthContext };

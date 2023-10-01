@@ -1,10 +1,12 @@
-import { Button, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, Link, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { useAuth } from "../../context/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { User } from "../../types/provider";
+import { LoginValidationError } from "../../types/validations";
 
 const Login = () => {
   const auth = useAuth();
@@ -33,26 +35,30 @@ const Login = () => {
   const onSubmit = async (data: Schema) => {
     try {
       const res = await axios.post("/api/user/login", data);
+      const user: User = res.data;
       auth?.dispatch({
         type: "LOGIN",
-        payload: res,
+        payload: user,
       });
+      localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
     } catch (error) {
-      const axiosError = error as AxiosError;
-      if ((axiosError.response?.data as any).error.includes("exist")) {
-        setError("email", { message: "Email does not exist" });
-      } else if (
-        (axiosError.response?.data as any).error.includes("password")
-      ) {
-        setError("password", { message: "Incorrect password" });
+      const axiosError = error as AxiosError<LoginValidationError>;
+      if (axiosError.response && axiosError.response.status === 406) {
+        setError(axiosError.response?.data.field, {
+          message: axiosError.response?.data.error,
+        });
       }
     }
   };
 
   return (
     <main className="min-h-screen flex justify-center items-center bg-gray-300">
-      <article className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5">
+      <Box
+        className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+        component={"form"}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <TextField
           {...register("email")}
           error={!!errors.email}
@@ -74,14 +80,10 @@ const Login = () => {
             Signup
           </Link>
         </Typography>
-        <Button
-          type="button"
-          variant="contained"
-          onClick={handleSubmit(onSubmit)}
-        >
+        <Button variant="contained" type="submit">
           Login
         </Button>
-      </article>
+      </Box>
     </main>
   );
 };

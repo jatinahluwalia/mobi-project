@@ -5,7 +5,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { useAuth } from "./context/auth";
+import { useAuth } from "./hooks/useAuth";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import axios from "axios";

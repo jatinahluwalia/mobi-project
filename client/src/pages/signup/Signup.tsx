@@ -1,4 +1,4 @@
-import { Button, TextField, Typography, Link } from "@mui/material";
+import { Button, TextField, Typography, Link, Box } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,11 @@ const Signup = () => {
       navigate("/login");
     } catch (error) {
       const axiosError = error as AxiosError;
-      if ((axiosError.response?.data as any).error.includes("password")) {
+      if (
+        (axiosError.response?.data as Record<string, string>).error.includes(
+          "password"
+        )
+      ) {
         setError("password", { message: "Please enter a strong password." });
       }
     }
@@ -51,7 +55,11 @@ const Signup = () => {
 
   return (
     <main className="min-h-screen flex justify-center items-center bg-gray-300">
-      <article className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5">
+      <Box
+        className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+        component={"form"}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <TextField
           {...register("fullName")}
           error={!!errors.fullName}
@@ -87,14 +95,10 @@ const Signup = () => {
             Login
           </Link>
         </Typography>
-        <Button
-          type="button"
-          variant="contained"
-          onClick={handleSubmit(onSubmit)}
-        >
+        <Button variant="contained" type="submit">
           Signup
         </Button>
-      </article>
+      </Box>
     </main>
   );
 };
