@@ -35,12 +35,12 @@ const Login = () => {
   const onSubmit = async (data: Schema) => {
     try {
       const res = await axios.post("/api/user/login", data);
-      const user: User = res.data;
+      const user = res.data as User;
       auth?.dispatch({
         type: "LOGIN",
         payload: user,
       });
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
     } catch (error) {
       const axiosError = error as AxiosError<LoginValidationError>;
@@ -48,6 +48,8 @@ const Login = () => {
         setError(axiosError.response?.data.field, {
           message: axiosError.response?.data.error,
         });
+      } else {
+        console.log(axiosError.response?.data.error);
       }
     }
   };

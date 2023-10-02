@@ -4,6 +4,51 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+export const login = async function (req: Request, res: Response) {
+  try {
+    const { email, password } = req.body;
+    if (!email) {
+      return res
+        .status(406)
+        .json({ error: "Please enter email", field: "email" });
+    }
+    if (!password) {
+      return res
+        .status(406)
+        .json({ error: "Password field cannot be empty", field: "password" });
+    }
+
+    const user: any = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(406)
+        .json({ error: "User does not exist", field: "email" });
+    }
+    const { hashedPassword, _id, ...restUser } = user._doc;
+    const matched = await bcrypt.compare(password, hashedPassword);
+    if (!matched) {
+      return res
+        .status(406)
+        .json({ error: "Incorrect password.", field: "password" });
+    }
+    const token = jwt.sign(
+      { _id: _id.toString() },
+      process.env.JWT_SECRET || "uirbvvubvuebuebu",
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    return res.status(200).json({
+      _id,
+      ...restUser,
+      token,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password, fullName, phone } = req.body;
@@ -31,7 +76,7 @@ export const signup = async (req: Request, res: Response) => {
     if (!validator.isAlpha(fullName)) {
       return res
         .status(406)
-        .json({ error: "Enter a valid Name", field: "Name" });
+        .json({ error: "Enter a valid Name", field: "fullName" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -48,51 +93,101 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async function (req: Request, res: Response) {
+export const signupAdmin = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    if (!email) {
+    const { email, password, fullName, phone } = req.body;
+    if (!validator.isEmail(email)) {
       return res
         .status(406)
-        .json({ error: "Please enter email", field: "email" });
+        .json({ error: "Please enter a valid email.", field: "email" });
     }
-    if (!password) {
+    if (!validator.isStrongPassword(password)) {
       return res
         .status(406)
-        .json({ error: "Password field cannot be empty", field: "password" });
+        .json({ error: "Please enter a strong password.", field: "password" });
     }
 
-    const user = (await User.findOne({ email })) as any;
-    if (!user) {
+    if (!validator.isMobilePhone(phone)) {
       return res
         .status(406)
-        .json({ error: "User does not exist", field: "email" });
+        .json({ error: "Please enter a valid phone number.", field: "phone" });
     }
-    const { hashedPassword, _id } = user;
-    const matched = await bcrypt.compare(password, hashedPassword);
-    if (!matched) {
+    if (!validator.isAlpha(fullName)) {
       return res
         .status(406)
-        .json({ error: "Incorrect password.", field: "password" });
+        .json({ error: "Please enter a valid name.", field: "fullName" });
     }
-    const token = jwt.sign(
-      { _id: _id.toString() },
-      process.env.JWT_SECRET || "uirbvvubvuebuebu",
-      {
-        expiresIn: "1d",
-      }
-    );
-
-    return res.status(200).json({ _id, token });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await User.create({
+      email,
+      hashedPassword,
+      fullName,
+      phone,
+      role: "admin",
+    });
+    return res.status(200).json({ message: "Admin created successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
 };
-export const update = async (req: Request, res: Response) => {
+
+export const signupSuperAdmin = async (req: Request, res: Response) => {
+  try {
+    const { email, password, fullName, phone } = req.body;
+    if (!validator.isEmail(email)) {
+      return res
+        .status(406)
+        .json({ error: "Please enter a valid email.", field: "email" });
+    }
+    if (!validator.isStrongPassword(password)) {
+      return res
+        .status(406)
+        .json({ error: "Please enter a strong password.", field: "password" });
+    }
+
+    if (!validator.isMobilePhone(phone)) {
+      return res
+        .status(406)
+        .json({ error: "Please enter a valid phone number.", field: "phone" });
+    }
+    if (!validator.isAlpha(fullName)) {
+      return res
+        .status(406)
+        .json({ error: "Please enter a valid name.", field: "fullName" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await User.create({
+      email,
+      hashedPassword,
+      fullName,
+      phone,
+      role: "superadmin",
+    });
+    return res
+      .status(200)
+      .json({ message: "Super Admin created successfully" });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateSelf = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const user = await User.findByIdAndUpdate(req.user._id, req.body);
     return res.json(user);
+  } catch (error: any) {
+    return res.status(406).json({ error: error.message });
+  }
+};
+
+export const deleteSelf = async (req: Request, res: Response) => {
+  try {
+    // @ts-ignore
+    await User.findByIdAndDelete(req.user._id);
+    return res.json({ message: "User deleted successfully" });
   } catch (error: any) {
     return res.status(406).json({ error: error.message });
   }
@@ -105,5 +200,32 @@ export const profile = async (req: Request, res: Response) => {
     return res.json(user);
   } catch (error: any) {
     return res.status(406).json({ error: error.message });
+  }
+};
+
+export const updateOtherUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await User.findOneAndUpdate({ _id: id, role: "user" }, req.body);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteOtherUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await User.findOneAndDelete({ _id: id, role: "user" });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const showAll = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({ role: { $or: ["user", "admin"] } });
+    return res.json(users);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
   }
 };

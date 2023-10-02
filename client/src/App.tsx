@@ -1,3 +1,8 @@
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+
 import "./App.css";
 import {
   BrowserRouter as Router,
@@ -14,6 +19,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
   const auth = useAuth();
+  axios.defaults.headers["Authorization"] = `${auth.user?.token}`;
   return (
     <Router>
       <Routes>

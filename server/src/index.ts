@@ -1,4 +1,4 @@
-import validator from "validator";
+
 import express from "express";
 import cors from "cors";
 import connectToDB from "./config/db";

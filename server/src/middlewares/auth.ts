@@ -9,35 +9,19 @@ export const checkAuth = async (
 ) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-    const decoded = (
-      jwt.verify(String(token), String(process.env.JWT_SECRET)) as any
-    )._id;
-    const user = await User.findById(decoded);
+    const { _id } = jwt.verify(
+      String(token),
+      String(process.env.JWT_SECRET)
+    ) as any;
+    const user = await User.findById(_id);
     if (!user) {
-      throw new Error();
+      return res.status(401).json({ error: "Unauthorized" });
     }
     //@ts-ignore
-    req.user = {
-      _id: user._id,
-    };
+    req.user = user;
     next();
   } catch (error) {
     console.log(error);
-    res.status(401).json({ error: "Please authenticate" });
+    return res.status(401).json({ error: "Please authenticate" });
   }
-};
-
-export const checkRole = (role: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      //@ts-ignore
-      if (req.user.role !== role) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      next();
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ error: "Please authenticate" });
-    }
-  };
 };
