@@ -40,7 +40,7 @@ const Login = () => {
         type: "LOGIN",
         payload: user,
       });
-      localStorage.setItem("user", JSON.stringify(user));
+
       navigate("/dashboard");
     } catch (error) {
       const axiosError = error as AxiosError<LoginValidationError>;

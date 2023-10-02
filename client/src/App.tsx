@@ -15,6 +15,7 @@ import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import axios from "axios";
 import Signup from "./pages/signup/Signup";
+import DashBoardLayout from "./components/layouts/DashBoardLayout";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -35,6 +36,15 @@ function App() {
           path="/signup"
           element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
         />
+
+        <Route element={<DashBoardLayout />}>
+          <Route
+            path="/dashboard"
+            element={
+              auth.user ? <div>Dashboard</div> : <Navigate to={"/login"} />
+            }
+          />
+        </Route>
       </Routes>
     </Router>
   );

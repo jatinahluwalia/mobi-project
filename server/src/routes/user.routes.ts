@@ -40,7 +40,7 @@ userRouter.delete("/", checkAuth, deleteSelf);
 
 //Admin specific routes
 
-userRouter.get("/all", checkAuth, isAdminOrSuperAdmin, showAll);
+userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
 userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
 userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
 

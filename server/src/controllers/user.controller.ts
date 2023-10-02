@@ -223,7 +223,7 @@ export const deleteOtherUser = async (req: Request, res: Response) => {
 
 export const showAll = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({ role: { $or: ["user", "admin"] } });
+    const users = await User.find();
     return res.json(users);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
