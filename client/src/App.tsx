@@ -20,6 +20,8 @@ import UpdateSelf from "./pages/dashboard/UpdateSelf";
 import Products from "./pages/dashboard/Products";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
 import AddProduct from "./pages/dashboard/AddProduct";
+import SignupAdmin from "./pages/dashboard/SignupAdmin";
+import SignupSuperAdmin from "./pages/dashboard/SignupSuperAdmin";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -51,6 +53,11 @@ function App() {
               element={<UpdateProduct />}
             />
             <Route path="/dashboard/products/add" element={<AddProduct />} />
+            <Route path="/dashboard/signup-admin" element={<SignupAdmin />} />
+            <Route
+              path="/dashboard/signup-super-admin"
+              element={<SignupSuperAdmin />}
+            />
           </Route>
         )}
       </Routes>

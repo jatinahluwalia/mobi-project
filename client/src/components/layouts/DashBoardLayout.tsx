@@ -67,6 +67,15 @@ const DashBoardLayout = () => {
         <Link to={"/dashboard/products"} className="p-5 hover:bg-white">
           Products
         </Link>
+        <Link to={"/dashboard/signup-admin"} className="p-5 hover:bg-white">
+          Add Admin
+        </Link>
+        <Link
+          to={"/dashboard/signup-super-admin"}
+          className="p-5 hover:bg-white"
+        >
+          Add Super Admin
+        </Link>
       </aside>
       <Outlet />
     </div>

@@ -112,7 +112,7 @@ export const signupAdmin = async (req: Request, res: Response) => {
         .status(406)
         .json({ error: "Please enter a valid phone number.", field: "phone" });
     }
-    if (!validator.isAlpha(fullName)) {
+    if (!/^[A-Za-z ]+$/.test(fullName)) {
       return res
         .status(406)
         .json({ error: "Please enter a valid name.", field: "fullName" });

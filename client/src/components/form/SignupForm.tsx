@@ -49,7 +49,7 @@ const SignupForm = ({ url }: Props) => {
       navigate("/login");
     } catch (error) {
       const axiosError = error as AxiosError<SignupValidationError>;
-      if (axiosError.response?.status === 422) {
+      if (axiosError.response?.status === 406) {
         setError(axiosError.response.data.field, {
           message: axiosError.response.data.error,
         });
