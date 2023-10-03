@@ -19,6 +19,7 @@ import DashBoardLayout from "./components/layouts/DashBoardLayout";
 import UpdateSelf from "./pages/dashboard/UpdateSelf";
 import Products from "./pages/dashboard/Products";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
+import AddProduct from "./pages/dashboard/AddProduct";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
               path="/dashboard/products/update/:_id"
               element={<UpdateProduct />}
             />
+            <Route path="/dashboard/products/add" element={<AddProduct />} />
           </Route>
         )}
       </Routes>

@@ -22,6 +22,16 @@ const Products = () => {
   }, []);
   return (
     <section className="flex items-start flex-wrap p-2 gap-2">
+      {["admin", "superadmin"].includes(user?.role) && (
+        <button
+          type="button"
+          className="bg-white shadow-md h-32 w-32 text-xl flex flex-col gap-2 rounded-full p-5 items-center justify-center"
+          onClick={() => navigate("/dashboard/products/add")}
+        >
+          <div>+</div>
+          <div>Add Product</div>
+        </button>
+      )}
       {products.map((product: any) => (
         <article
           className="bg-white shadow-md rounded-md border border-black  flex flex-col gap-2 divide-y divide-y-black"
@@ -38,6 +48,9 @@ const Products = () => {
               <button
                 type="button"
                 className="px-4 py-2 rounded-md bg-white shadow-md"
+                onClick={() => {
+                  navigate(`/dashboard/products/update/${product._id}`);
+                }}
               >
                 Edit
               </button>
