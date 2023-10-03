@@ -1,8 +1,22 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import EditIcon from "@mui/icons-material/Edit";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const DashBoardLayout = () => {
+  type User = {
+    fullName: string;
+    email: string;
+    phone: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  const [data, setData] = useState<User | null>(null);
   const auth = useAuth();
+
   const navigate = useNavigate();
   const logout = () => {
     auth.dispatch({
@@ -11,18 +25,32 @@ const DashBoardLayout = () => {
     });
     navigate(0);
   };
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get<User>("/api/user");
+      const data = res.data;
+      setData(data);
+    };
+    getData();
+  }, []);
   return (
     <div className="h-screen grid grid-cols-[400px_1fr]">
-      <aside className="bg-green-100">
-        {auth.user && (
-          <div className="flex justify-between items-center h-16 border-b border-gray-200 px-5">
+      <aside className="bg-green-100 flex flex-col divide-y-[1px] divide-gray-800">
+        {data && (
+          <div className="flex justify-between items-center h-16 border-gray-200 px-5">
             <div className="flex items-center space-x-4">
               <div className="rounded-full h-8 w-8 bg-green-800 text-white grid place-content-center">
-                {auth.user.fullName[0]}
+                {data.fullName[0]}
               </div>
-              <h1 className="text-black">{auth.user.fullName}</h1>
-              <div className="-m-2 bg-black text-white px-4 py-1 rounded-sm">
-                {auth.user.role}
+              <h1 className="text-black">{data.fullName}</h1>
+              <div className=" bg-black text-white px-4 py-1 rounded-sm">
+                {data.role}
+              </div>
+              <div
+                onClick={() => navigate("/dashboard/update-self")}
+                className="h-4 w-4 bg-black text-white p-4 cursor-pointer rounded-full grid place-content-center"
+              >
+                <EditIcon fontSize="inherit" />
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -36,6 +64,9 @@ const DashBoardLayout = () => {
             </div>
           </div>
         )}
+        <Link to={"/dashboard/products"} className="p-5 hover:bg-white">
+          Products
+        </Link>
       </aside>
       <Outlet />
     </div>

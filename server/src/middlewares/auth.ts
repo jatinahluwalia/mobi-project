@@ -8,7 +8,7 @@ export const checkAuth = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+    const token = req.headers.authorization?.replace("Bearer ", "");
     const { _id } = jwt.verify(
       String(token),
       String(process.env.JWT_SECRET)

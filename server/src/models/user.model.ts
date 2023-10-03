@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,14 +22,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      default: "user",
-    },
+    role: { type: String, default: "user" },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
+type User = InferSchemaType<typeof userSchema>;
+
+userSchema.plugin(paginate);
+
+const User = mongoose.model<User, mongoose.PaginateModel<User>>(
+  "User",
+  userSchema,
+  "users"
+);
 
 export default User;

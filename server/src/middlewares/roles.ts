@@ -41,10 +41,10 @@ export const isAdminOrSuperAdmin = async (
 ) => {
   try {
     // @ts-ignore
-    if (req.user.role !== "admin" || req.user.role !== "superadmin") {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (req.user.role === "admin" || req.user.role === "superadmin") {
+      return next();
     }
-    next();
+    return res.status(401).json({ error: "Unauthorized" });
   } catch (error) {
     console.log(error);
     return res.status(401).json({ error: "Please authenticate" });

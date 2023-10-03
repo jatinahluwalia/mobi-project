@@ -1,26 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { SignupValidationError } from "../../types/validations";
+import { UpdateValidationError } from "../../types/validations";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
 interface Props {
   url: string;
+  email: string;
+  fullName: string;
+  phone: string;
 }
 
-const SignupForm = ({ url }: Props) => {
+const UpdateForm = ({ url, email, fullName, phone }: Props) => {
   const navigate = useNavigate();
 
   const schema = z.object({
     email: z.string().email("Please enter a valid email"),
-    password: z
-      .string()
-      .min(8, "Minimum 8 characters")
-      .max(100, "Maximum 100 characters"),
+
     fullName: z.string().regex(nameRegex, "Name can only contain letters"),
     phone: z
       .string()
@@ -35,20 +35,19 @@ const SignupForm = ({ url }: Props) => {
     formState: { errors },
   } = useForm<Schema>({
     defaultValues: {
-      email: "",
-      password: "",
-      fullName: "",
-      phone: "",
+      email,
+      fullName,
+      phone,
     },
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: Schema) => {
     try {
-      await axios.post(url, data);
-      navigate("/login");
+      await axios.put(url, data);
+      navigate("/dashboard");
     } catch (error) {
-      const axiosError = error as AxiosError<SignupValidationError>;
+      const axiosError = error as AxiosError<UpdateValidationError>;
       if (axiosError.response?.status === 422) {
         setError(axiosError.response.data.field, {
           message: axiosError.response.data.error,
@@ -83,25 +82,11 @@ const SignupForm = ({ url }: Props) => {
         variant="standard"
         label="Email"
       />
-      <TextField
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        variant="standard"
-        label="Password"
-        type="password"
-      />
-      <Typography variant="body2">
-        Already have an account?{" "}
-        <Link onClick={() => navigate("/login")} className="cursor-pointer">
-          Login
-        </Link>
-      </Typography>
       <Button variant="contained" type="submit">
-        Signup
+        Update
       </Button>
     </Box>
   );
 };
 
-export default SignupForm;
+export default UpdateForm;

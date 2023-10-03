@@ -16,11 +16,14 @@ import Login from "./pages/login/Login";
 import axios from "axios";
 import Signup from "./pages/signup/Signup";
 import DashBoardLayout from "./components/layouts/DashBoardLayout";
+import UpdateSelf from "./pages/dashboard/UpdateSelf";
+import Products from "./pages/dashboard/Products";
+import UpdateProduct from "./pages/dashboard/UpdateProduct";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
   const auth = useAuth();
-  axios.defaults.headers["Authorization"] = `${auth.user?.token}`;
+
   return (
     <Router>
       <Routes>
@@ -37,14 +40,17 @@ function App() {
           element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
         />
 
-        <Route element={<DashBoardLayout />}>
-          <Route
-            path="/dashboard"
-            element={
-              auth.user ? <div>Dashboard</div> : <Navigate to={"/login"} />
-            }
-          />
-        </Route>
+        {auth.user && (
+          <Route element={<DashBoardLayout />}>
+            <Route path="/dashboard" element={<div>Dashboard</div>} />
+            <Route path="/dashboard/update-self" element={<UpdateSelf />} />
+            <Route path="/dashboard/products" element={<Products />} />
+            <Route
+              path="/dashboard/products/update/:_id"
+              element={<UpdateProduct />}
+            />
+          </Route>
+        )}
       </Routes>
     </Router>
   );

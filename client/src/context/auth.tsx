@@ -1,5 +1,6 @@
 import { createContext, useEffect, useReducer } from "react";
 import { Action, Context, User } from "../types/provider";
+import axios from "axios";
 
 const AuthContext = createContext<Context>({} as Context);
 
@@ -20,6 +21,7 @@ const authReducer = (state: User, action: Action) => {
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  axios.defaults.headers["Authorization"] = `Bearer ${state?.token}`;
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {

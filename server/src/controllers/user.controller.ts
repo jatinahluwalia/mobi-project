@@ -177,8 +177,9 @@ export const updateSelf = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const user = await User.findByIdAndUpdate(req.user._id, req.body);
-    return res.json(user);
+    return res.status(200).json(user);
   } catch (error: any) {
+    console.log(error);
     return res.status(406).json({ error: error.message });
   }
 };
@@ -223,7 +224,10 @@ export const deleteOtherUser = async (req: Request, res: Response) => {
 
 export const showAll = async (req: Request, res: Response) => {
   try {
-    const users = await User.find();
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const pages = await User.paginate({}, { page, limit });
+    const users = pages.docs;
     return res.json(users);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });

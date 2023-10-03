@@ -3,7 +3,16 @@ import Product from "../models/products.model";
 
 export const displayAll = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const pages = await Product.paginate(
+      {},
+      {
+        page,
+        limit,
+      }
+    );
+    const products = pages.docs;
     return res.status(200).json({ products });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
