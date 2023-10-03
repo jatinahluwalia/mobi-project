@@ -21,11 +21,11 @@ const Products = () => {
     getUser();
   }, []);
   return (
-    <section className="flex items-start flex-wrap p-2 gap-2">
+    <section className="grid grid-cols-1 md:grid-cols-2 items-center p-2 gap-2">
       {["admin", "superadmin"].includes(user?.role) && (
         <button
           type="button"
-          className="bg-white shadow-md h-32 w-32 text-xl flex flex-col gap-2 rounded-full p-5 items-center justify-center"
+          className="bg-white shadow-md h-32 w-32 text-xl flex flex-col gap-2 rounded-full p-5 items-center justify-center mx-auto"
           onClick={() => navigate("/dashboard/products/add")}
         >
           <div>+</div>

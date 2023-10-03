@@ -23,7 +23,7 @@ const DashBoardLayout = () => {
       type: "LOGOUT",
       payload: null,
     });
-    navigate(0);
+    navigate("/login");
   };
   useEffect(() => {
     const getData = async () => {
@@ -34,10 +34,10 @@ const DashBoardLayout = () => {
     getData();
   }, []);
   return (
-    <div className="h-screen grid grid-cols-[400px_1fr]">
+    <div className="h-screen grid grid-cols-[300px_1fr]">
       <aside className="bg-green-100 flex flex-col divide-y-[1px] divide-gray-800">
         {data && (
-          <div className="flex justify-between items-center h-16 border-gray-200 px-5">
+          <div className="flex justify-between items-center gap-2 py-2 border-gray-200 px-5 flex-wrap">
             <div className="flex items-center space-x-4">
               <div className="rounded-full h-8 w-8 bg-green-800 text-white grid place-content-center">
                 {data.fullName[0]}
@@ -67,15 +67,19 @@ const DashBoardLayout = () => {
         <Link to={"/dashboard/products"} className="p-5 hover:bg-white">
           Products
         </Link>
-        <Link to={"/dashboard/signup-admin"} className="p-5 hover:bg-white">
-          Add Admin
-        </Link>
-        <Link
-          to={"/dashboard/signup-super-admin"}
-          className="p-5 hover:bg-white"
-        >
-          Add Super Admin
-        </Link>
+        {["admin", "superadmin"].includes(String(data?.role)) && (
+          <Link to={"/dashboard/signup-admin"} className="p-5 hover:bg-white">
+            Add Admin
+          </Link>
+        )}
+        {data?.role === "superadmin" && (
+          <Link
+            to={"/dashboard/signup-super-admin"}
+            className="p-5 hover:bg-white"
+          >
+            Add Super Admin
+          </Link>
+        )}
       </aside>
       <Outlet />
     </div>
