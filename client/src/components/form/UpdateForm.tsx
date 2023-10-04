@@ -12,20 +12,27 @@ interface Props {
   url: string;
   email: string;
   fullName: string;
-  phone: string;
+  phone: number;
 }
 
 const UpdateForm = ({ url, email, fullName, phone }: Props) => {
   const navigate = useNavigate();
 
   const schema = z.object({
-    email: z.string().email("Please enter a valid email"),
-
-    fullName: z.string().regex(nameRegex, "Name can only contain letters"),
-    phone: z
+    email: z
       .string()
-      .min(10, "Minimum 10 characters")
-      .regex(/^[0-9]+$/, "Phone number can only contain numbers"),
+      .email("Please enter a valid email")
+      .max(50, "Email cannot be larger than 50 characters"),
+    fullName: z
+      .string()
+      .nonempty("Please enter your name.")
+      .max(25, "Name cannot be larger than 25 characters.")
+      .regex(nameRegex, "Name can only contain letters"),
+    phone: z
+      .number()
+      .nonnegative("Please don't enter negative number.")
+      .min(1000000000, "Please enter a 10 digit number")
+      .max(9999999999, "Please enter a 10 digit number"),
   });
   type Schema = z.infer<typeof schema>;
   const {
@@ -40,6 +47,7 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
       phone,
     },
     resolver: zodResolver(schema),
+    mode: "all",
   });
 
   const onSubmit = async (data: Schema) => {

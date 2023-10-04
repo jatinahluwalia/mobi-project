@@ -16,16 +16,23 @@ const SignupForm = ({ url }: Props) => {
   const navigate = useNavigate();
 
   const schema = z.object({
-    email: z.string().email("Please enter a valid email"),
+    email: z
+      .string()
+      .email("Please enter a valid email")
+      .max(50, "Email cannot be larger than 50 characters"),
     password: z
       .string()
       .min(8, "Minimum 8 characters")
-      .max(100, "Maximum 100 characters"),
-    fullName: z.string().regex(nameRegex, "Name can only contain letters"),
-    phone: z
+      .max(32, "Maximum 32 characters"),
+    fullName: z
       .string()
-      .min(10, "Minimum 10 characters")
-      .regex(/^[0-9]+$/, "Phone number can only contain numbers"),
+      .max(25, "Name cannot be larger than 25 characters.")
+      .regex(nameRegex, "Name can only contain letters"),
+    phone: z
+      .number()
+      .nonnegative("Please don't enter negative number.")
+      .min(1000000000, "Please enter a 10 digit number")
+      .max(9999999999, "Please enter a 10 digit number"),
   });
   type Schema = z.infer<typeof schema>;
   const {
@@ -38,8 +45,9 @@ const SignupForm = ({ url }: Props) => {
       email: "",
       password: "",
       fullName: "",
-      phone: "",
+      phone: undefined,
     },
+    mode: "all",
     resolver: zodResolver(schema),
   });
 
@@ -70,7 +78,8 @@ const SignupForm = ({ url }: Props) => {
         label="Full Name"
       />
       <TextField
-        {...register("phone")}
+        {...register("phone", { valueAsNumber: true })}
+        type="number"
         error={!!errors.phone}
         helperText={errors.phone?.message}
         variant="standard"
