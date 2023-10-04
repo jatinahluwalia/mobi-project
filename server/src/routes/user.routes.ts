@@ -23,110 +23,6 @@ const userRouter = express.Router();
 
 /**
  * @openapi
- * '/api/user/login':
- *  post:
- *    summary: Login user
- *    description: Login user
- *    requestBody:
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              email:
- *                type: string
- *                required: true
- *              password:
- *                type: string
- *                required: true
- *    responses:
- *      200:
- *        description: User logged in successfully
- *      400:
- *        description: Invalid credentials
- *      500:
- *        description: Some error occurred
- */
-userRouter.post("/login", login);
-
-/**
- * @openapi
- * '/api/user/signup':
- *  post:
- *    summary: Signup user
- *    description: Signup user
- *    requestBody:
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              email:
- *                type: string
- *                required: true
- *              password:
- *                type: string
- *                required: true
- *              phone:
- *                type: string
- *                required: true
- *              fullName:
- *                type: string
- *                required: true
- *    responses:
- *      200:
- *        description: User signed up successfully
- *      406:
- *        description: Invalid credentials
- *      500:
- *        description: Some error occurred
- */
-userRouter.post("/signup", signup);
-
-/**
- * @openapi
- * '/api/user/signup-admin':
- *  post:
- *    summary: Signup admin
- *    security:
- *      bearerAuth: []
- *    description: Signup admin
- *    requestBody:
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              email:
- *                type: string
- *                required: true
- *              password:
- *                type: string
- *                required: true
- *              phone:
- *                type: string
- *                required: true
- *              fullName:
- *                type: string
- *                required: true
- *    responses:
- *      200:
- *        description: Admin signed up successfully
- *      406:
- *        description: Invalid credentials
- *      500:
- *        description: Some error occurred
- */
-userRouter.post("/signup-admin", checkAuth, isAdminOrSuperAdmin, signupAdmin);
-userRouter.post(
-  "/signup-super-admin",
-  checkAuth,
-  isSuperAdmin,
-  signupSuperAdmin
-);
-
-/**
- * @openapi
  * /api/user/login:
  *  post:
  *    summary: Login user
@@ -420,16 +316,16 @@ userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
  */
 userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
 
-//User specific routes
+// //User specific routes
 
-userRouter.get("/", checkAuth, profile);
-userRouter.put("/", checkAuth, updateSelf);
-userRouter.delete("/", checkAuth, deleteSelf);
+// userRouter.get("/", checkAuth, profile);
+// userRouter.put("/", checkAuth, updateSelf);
+// userRouter.delete("/", checkAuth, deleteSelf);
 
-//Admin specific routes
+// //Admin specific routes
 
-userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
-userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
-userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
+// userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
+// userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
+// userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
 
 export default userRouter;
