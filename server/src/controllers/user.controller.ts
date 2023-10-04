@@ -117,6 +117,12 @@ export const signupAdmin = async (req: Request, res: Response) => {
         .status(406)
         .json({ error: "Please enter a valid name.", field: "fullName" });
     }
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res
+        .status(406)
+        .json({ error: "User already exists.", field: "email" });
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     await User.create({
@@ -155,6 +161,12 @@ export const signupSuperAdmin = async (req: Request, res: Response) => {
       return res
         .status(406)
         .json({ error: "Please enter a valid name.", field: "fullName" });
+    }
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res
+        .status(406)
+        .json({ error: "User already exists.", field: "email" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
