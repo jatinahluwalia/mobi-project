@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
@@ -33,12 +34,27 @@ const DashBoardLayout = () => {
     };
     getData();
   }, []);
+  const handleDelete = async () => {
+    try {
+      const sure = confirm("You sure you want to delete your account?");
+      if (sure) {
+        await axios.delete("/api/user");
+        auth.dispatch({
+          type: "LOGOUT",
+          payload: null,
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
   return (
     <div className="h-screen grid grid-cols-[300px_1fr]">
       <aside className="bg-green-100 flex flex-col divide-y-[1px] divide-gray-800">
         {data && (
           <div className="flex justify-between items-center gap-2 py-2 border-gray-200 px-5 flex-wrap">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 flex-wrap">
               <div className="rounded-full h-8 w-8 bg-green-800 text-white grid place-content-center">
                 {data.fullName[0]}
               </div>
@@ -52,6 +68,13 @@ const DashBoardLayout = () => {
               >
                 <EditIcon fontSize="inherit" />
               </div>
+              <button
+                type="button"
+                className="h-4 w-4 bg-black text-white p-4 cursor-pointer rounded-full grid place-content-center"
+                onClick={handleDelete}
+              >
+                <DeleteIcon fontSize="inherit" />
+              </button>
             </div>
             <div className="flex items-center space-x-4">
               <button
