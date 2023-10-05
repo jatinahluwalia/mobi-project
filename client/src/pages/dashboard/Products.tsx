@@ -1,11 +1,26 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import {
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { motion } from "framer-motion";
+import { routingVariants } from "../../utils/animation";
+import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 const Products = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [user, setUser] = useState<any>();
+  const [products, setProducts] = useState([] as Product[]);
+  const [user, setUser] = useState<User>({} as User);
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get("/api/product");
@@ -20,71 +35,80 @@ const Products = () => {
     };
     getUser();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const sure = confirm("Sure you want to delete this product?");
+      if (sure) {
+        await axios.delete(`/api/product/${id}`);
+        navigate(0);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 items-center p-2 gap-2">
-      {["admin", "superadmin"].includes(user?.role) && (
-        <button
-          type="button"
-          className="bg-white shadow-md h-32 w-32 text-xl flex flex-col gap-2 rounded-full p-5 items-center justify-center mx-auto"
+    <motion.section {...routingVariants} className="p-5 grow">
+      <Typography variant="h2" marginBlock={5}>
+        Products Management
+      </Typography>
+      {user?.permissions?.includes("product-add") && (
+        <Button
           onClick={() => navigate("/dashboard/products/add")}
+          endIcon={<Add />}
+          sx={{ marginBottom: 5 }}
+          variant="outlined"
         >
-          <div>+</div>
-          <div>Add Product</div>
-        </button>
+          Add Product
+        </Button>
       )}
-      {products.map((product: any) => (
-        <article
-          className="bg-white shadow-md rounded-md border border-black  flex flex-col gap-2 divide-y divide-y-black"
-          key={product._id}
-        >
-          <div className="p-5 flex flex-col gap-2 items-center">
-            <img src={product.image} className="rounded-full h-32  w-32" />
-            <h2>{product.name}</h2>
-            <p className="text-gray-500">{product.detail}</p>
-            <p className="text-black">{product.price}</p>
-          </div>
-          {user?.role === "admin" ? (
-            <div className="p-2">
-              <button
-                type="button"
-                className="px-4 py-2 rounded-md bg-white shadow-md"
-                onClick={() => {
-                  navigate(`/dashboard/products/update/${product._id}`);
-                }}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Detail</TableCell>
+              <TableCell align="left">Price</TableCell>
+              <TableCell align="left">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products.map((product) => (
+              <TableRow
+                key={product.name}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                Edit
-              </button>
-            </div>
-          ) : user?.role === "superadmin" ? (
-            <div className="p-2 flex gap-2">
-              <button
-                type="button"
-                className="px-4 py-2 rounded-md bg-white shadow-md hover:bg-opacity-80"
-                onClick={() => {
-                  navigate(`/dashboard/products/update/${product._id}`);
-                }}
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 rounded-md bg-white shadow-md hover:bg-opacity-80"
-                onClick={async () => {
-                  try {
-                    await axios.delete(`/api/product/${product._id}`);
-                    navigate(0);
-                  } catch (error) {
-                    console.log(error);
-                  }
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          ) : null}
-        </article>
-      ))}
-    </section>
+                <TableCell align="left">{product.name}</TableCell>
+                <TableCell align="left">{product.detail}</TableCell>
+                <TableCell align="left">{product.price}</TableCell>
+                <TableCell align="left">
+                  <Stack direction={"row"} gap={2}>
+                    <IconButton>
+                      <Visibility />
+                    </IconButton>
+
+                    {user?.permissions?.includes("product-edit") && (
+                      <IconButton
+                        onClick={() =>
+                          navigate("/dashboard/products/update/" + product._id)
+                        }
+                      >
+                        <Edit />
+                      </IconButton>
+                    )}
+                    {user?.permissions?.includes("product-delete") && (
+                      <IconButton onClick={() => handleDelete(product._id)}>
+                        <Delete />
+                      </IconButton>
+                    )}
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </motion.section>
   );
 };
 

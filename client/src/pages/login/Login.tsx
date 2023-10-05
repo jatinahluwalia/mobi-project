@@ -1,4 +1,11 @@
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,12 +14,21 @@ import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../types/provider";
 import { LoginValidationError } from "../../types/validations";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Login = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
   const auth = useAuth();
   const navigate = useNavigate();
   const schema = z.object({
-    email: z.string().email("Please enter a valid email"),
+    email: z
+      .string()
+      .email("Please enter a valid email")
+      .max(50, "Email should be under 50 characters."),
     password: z
       .string()
       .min(8, "Minimum 8 characters")
@@ -55,37 +71,67 @@ const Login = () => {
   };
 
   return (
-    <main className="min-h-screen flex justify-center items-center bg-gray-300">
-      <Box
-        className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
-        component={"form"}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <TextField
-          {...register("email")}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-          variant="standard"
-          label="Email"
+    <main className="min-h-screen flex flex-col place-content-center bg-gray-300 ">
+      <div className="grow grid grid-cols-2 w-[min(1000px,100%)] mx-auto">
+        <motion.img
+          src="/mobi.png"
+          initial={{ x: 100 }}
+          animate={{ x: 0 }}
+          transition={{ duration: 1 }}
+          className="m-auto"
         />
-        <TextField
-          {...register("password")}
-          error={!!errors.password}
-          helperText={errors.password?.message}
-          variant="standard"
-          label="Password"
-          type="password"
-        />
-        <Typography variant="body2">
-          Don't have an account?{" "}
-          <Link onClick={() => navigate("/signup")} className="cursor-pointer">
-            Signup
-          </Link>
-        </Typography>
-        <Button variant="contained" type="submit">
-          Login
-        </Button>
-      </Box>
+        <motion.div
+          initial={{ x: -100 }}
+          animate={{ x: 0 }}
+          transition={{ duration: 1 }}
+          className="m-auto"
+        >
+          <Box
+            className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+            component={"form"}
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <TextField
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              variant="standard"
+              label="Email"
+            />
+            <TextField
+              {...register("password")}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              variant="standard"
+              label="Password"
+              type={isVisible ? "text" : "password"}
+              InputProps={{
+                endAdornment: isVisible ? (
+                  <IconButton onClick={() => setIsVisible(!isVisible)}>
+                    <VisibilityIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton onClick={() => setIsVisible(!isVisible)}>
+                    <VisibilityOffIcon />
+                  </IconButton>
+                ),
+              }}
+            />
+            <Typography variant="body2">
+              Don't have an account?{" "}
+              <Link
+                onClick={() => navigate("/signup")}
+                className="cursor-pointer"
+              >
+                Signup
+              </Link>
+            </Typography>
+            <Button variant="contained" type="submit">
+              Login
+            </Button>
+          </Box>
+        </motion.div>
+      </div>
     </main>
   );
 };

@@ -6,7 +6,6 @@ const productSchema = new mongoose.Schema({
   detail: String,
   price: String,
   hero: String,
-  image: String,
 });
 
 productSchema.plugin(paginate);

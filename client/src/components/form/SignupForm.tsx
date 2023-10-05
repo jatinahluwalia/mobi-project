@@ -1,10 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { SignupValidationError } from "../../types/validations";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useState } from "react";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -13,6 +23,7 @@ interface Props {
 }
 
 const SignupForm = ({ url }: Props) => {
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
 
   const schema = z.object({
@@ -22,14 +33,16 @@ const SignupForm = ({ url }: Props) => {
       .max(50, "Email cannot be larger than 50 characters"),
     password: z
       .string()
+      .nonempty("Please enter a password")
       .min(8, "Minimum 8 characters")
       .max(32, "Maximum 32 characters"),
     fullName: z
       .string()
+      .nonempty("Please enter a name")
       .max(25, "Name cannot be larger than 25 characters.")
       .regex(nameRegex, "Name can only contain letters"),
     phone: z
-      .number()
+      .number({ invalid_type_error: "Please enter a number" })
       .nonnegative("Please don't enter negative number.")
       .min(1000000000, "Please enter a 10 digit number")
       .max(9999999999, "Please enter a 10 digit number"),
@@ -53,7 +66,9 @@ const SignupForm = ({ url }: Props) => {
 
   const onSubmit = async (data: Schema) => {
     try {
-      await axios.post(url, data);
+      await axios.post(url, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       navigate("/login");
     } catch (error) {
       const axiosError = error as AxiosError<SignupValidationError>;
@@ -61,6 +76,8 @@ const SignupForm = ({ url }: Props) => {
         setError(axiosError.response.data.field, {
           message: axiosError.response.data.error,
         });
+      } else {
+        console.log(axiosError);
       }
     }
   };
@@ -98,14 +115,27 @@ const SignupForm = ({ url }: Props) => {
         helperText={errors.password?.message}
         variant="standard"
         label="Password"
-        type="password"
+        type={isVisible ? "text" : "password"}
+        InputProps={{
+          endAdornment: isVisible ? (
+            <IconButton onClick={() => setIsVisible(!isVisible)}>
+              <VisibilityIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={() => setIsVisible(!isVisible)}>
+              <VisibilityOffIcon />
+            </IconButton>
+          ),
+        }}
       />
-      <Typography variant="body2">
-        Already have an account?{" "}
-        <Link onClick={() => navigate("/login")} className="cursor-pointer">
-          Login
-        </Link>
-      </Typography>
+      {!url.includes("admin") && (
+        <Typography variant="body2">
+          Already have an account?{" "}
+          <Link onClick={() => navigate("/login")} className="cursor-pointer">
+            Login
+          </Link>
+        </Typography>
+      )}
       <Button variant="contained" type="submit">
         Signup
       </Button>

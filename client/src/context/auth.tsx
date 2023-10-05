@@ -1,12 +1,11 @@
 import { createContext, useEffect, useReducer } from "react";
-import { Action, Context, User } from "../types/provider";
 import axios from "axios";
 
 const AuthContext = createContext<Context>({} as Context);
 
-const initialState: User = null;
+const initialState: ContextUser = null;
 
-const authReducer = (state: User, action: Action) => {
+const authReducer = (state: ContextUser, action: Action) => {
   switch (action.type) {
     case "LOGIN":
       localStorage.setItem("user", JSON.stringify(action.payload));

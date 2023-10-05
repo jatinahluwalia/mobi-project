@@ -1,10 +1,11 @@
+import { Badge, Stack, Typography } from "@mui/material";
 import UpdateProductForm from "../../components/form/UpdateProductForm";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const UpdateProduct = () => {
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const { _id } = useParams();
   useEffect(() => {
     const getProduct = async () => {
@@ -13,15 +14,20 @@ const UpdateProduct = () => {
       setProduct(data.product);
     };
     getProduct();
-  }, []);
+  }, [_id]);
   return (
     product && (
-      <UpdateProductForm
-        _id={String(_id)}
-        detail={product?.detail}
-        name={product?.name}
-        price={product?.price}
-      />
+      <Stack padding={5}>
+        <Typography variant="h2" marginBottom={5}>
+          Update Product: <Badge color="primary">{product?.name}</Badge>
+        </Typography>
+        <UpdateProductForm
+          _id={String(_id)}
+          detail={product?.detail}
+          name={product?.name}
+          price={product?.price}
+        />
+      </Stack>
     )
   );
 };

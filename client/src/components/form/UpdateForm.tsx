@@ -29,7 +29,7 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
       .max(25, "Name cannot be larger than 25 characters.")
       .regex(nameRegex, "Name can only contain letters"),
     phone: z
-      .number()
+      .number({ invalid_type_error: "Please enter a valid phone number." })
       .nonnegative("Please don't enter negative number.")
       .min(1000000000, "Please enter a 10 digit number")
       .max(9999999999, "Please enter a 10 digit number"),
@@ -77,7 +77,8 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
         label="Full Name"
       />
       <TextField
-        {...register("phone")}
+        {...register("phone", { valueAsNumber: true })}
+        type="number"
         error={!!errors.phone}
         helperText={errors.phone?.message}
         variant="standard"

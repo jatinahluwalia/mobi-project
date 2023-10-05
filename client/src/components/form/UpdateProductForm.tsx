@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CurrencyRupee } from "@mui/icons-material";
 import { Box, Button, TextField } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,7 @@ import { z } from "zod";
 interface Props {
   name: string;
   detail: string;
-  price: string;
+  price: number;
   _id: string;
 }
 
@@ -18,7 +19,7 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
   const schema = z.object({
     name: z.string().nonempty("Name cannot be empty"),
     detail: z.string().nonempty("Detail cannot be empty"),
-    price: z.string().nonempty("Price cannot be empty"),
+    price: z.number({ invalid_type_error: "Please enter a price" }),
   });
   type Schema = z.infer<typeof schema>;
   const {
@@ -64,11 +65,12 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
         label="Detail"
       />
       <TextField
-        {...register("price")}
+        {...register("price", { valueAsNumber: true })}
         error={!!errors.price}
         helperText={errors.price?.message}
         variant="standard"
         label="Price"
+        InputProps={{ startAdornment: <CurrencyRupee /> }}
       />
       <Button variant="contained" type="submit">
         Update

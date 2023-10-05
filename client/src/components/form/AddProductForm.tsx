@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CurrencyRupee } from "@mui/icons-material";
 import { Box, Button, TextField } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
@@ -7,9 +8,15 @@ import { z } from "zod";
 const AddProductForm = () => {
   const navigate = useNavigate();
   const schema = z.object({
-    name: z.string().nonempty("Name cannot be empty"),
+    name: z
+      .string()
+      .nonempty("Name cannot be empty")
+      .max(50, "Cant be larger than 50 characters")
+      .regex(/^[A-Za-z ]/g, "Name can only contain letters"),
     detail: z.string().nonempty("Detail cannot be empty"),
-    price: z.string().nonempty("Price cannot be empty"),
+    price: z.number({
+      invalid_type_error: "Enter a valid price",
+    }),
     hero: z.string().nonempty("Hero cannot be empty"),
   });
   type Schema = z.infer<typeof schema>;
@@ -21,9 +28,9 @@ const AddProductForm = () => {
     defaultValues: {
       name: "",
       detail: "",
-      price: "",
     },
     resolver: zodResolver(schema),
+    mode: "all",
   });
 
   const onSubmit = async (data: Schema) => {
@@ -37,7 +44,7 @@ const AddProductForm = () => {
   };
   return (
     <Box
-      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5"
       component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -56,11 +63,14 @@ const AddProductForm = () => {
         label="Detail"
       />
       <TextField
-        {...register("price")}
+        {...register("price", { valueAsNumber: true })}
         error={!!errors.price}
         helperText={errors.price?.message}
         variant="standard"
         label="Price"
+        InputProps={{
+          startAdornment: <CurrencyRupee />,
+        }}
       />
       <TextField
         {...register("hero")}

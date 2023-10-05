@@ -68,12 +68,12 @@ export const signup = async (req: Request, res: Response) => {
         .status(406)
         .json({ error: "Enter a strong password.", field: "password" });
     }
-    if (!validator.isMobilePhone(phone)) {
+    if (!validator.isMobilePhone(String(phone))) {
       return res
         .status(406)
         .json({ error: "Enter a vaid mobile number.", field: "phone" });
     }
-    if (!validator.isAlpha(fullName)) {
+    if (!/[A-Za-z ]/g.test(fullName)) {
       return res
         .status(406)
         .json({ error: "Enter a valid Name", field: "fullName" });
@@ -86,6 +86,7 @@ export const signup = async (req: Request, res: Response) => {
       email,
       hashedPassword,
       phone,
+      permissions: [],
     });
     res.status(200).json({ message: "Signed up successfully" });
   } catch (error: any) {
@@ -107,7 +108,7 @@ export const signupAdmin = async (req: Request, res: Response) => {
         .json({ error: "Please enter a strong password.", field: "password" });
     }
 
-    if (!validator.isMobilePhone(phone)) {
+    if (!validator.isMobilePhone(String(phone))) {
       return res
         .status(406)
         .json({ error: "Please enter a valid phone number.", field: "phone" });
@@ -131,6 +132,7 @@ export const signupAdmin = async (req: Request, res: Response) => {
       fullName,
       phone,
       role: "admin",
+      permissions: ["product-view", "product-add", "product-edit"],
     });
     return res.status(200).json({ message: "Admin created successfully" });
   } catch (error: any) {
@@ -176,6 +178,12 @@ export const signupSuperAdmin = async (req: Request, res: Response) => {
       fullName,
       phone,
       role: "superadmin",
+      permissions: [
+        "product-view",
+        "product-add",
+        "product-edit",
+        "product-delete",
+      ],
     });
     return res
       .status(200)
@@ -240,7 +248,31 @@ export const showAll = async (req: Request, res: Response) => {
     const limit = req.query.limit ? Number(req.query.limit) : 10;
     const pages = await User.paginate({}, { page, limit });
     const users = pages.docs;
-    return res.json(users);
+    return res.json({ users });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const showOne = async (req: Request, res: Response) => {
+  try {
+    const { _id } = req.params;
+    const user = await User.findById(_id);
+    return res.json({ user });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const updatePermissions = async (req: Request, res: Response) => {
+  try {
+    console.log("UPDATE PERMISSIONS");
+    const { _id } = req.params;
+    const { permissions } = req.body;
+    await User.findByIdAndUpdate(_id, {
+      permissions: permissions,
+    });
+    return res.json({ message: "Permissions updated successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

@@ -5,10 +5,12 @@ import {
   login,
   profile,
   showAll,
+  showOne,
   signup,
   signupAdmin,
   signupSuperAdmin,
   updateOtherUser,
+  updatePermissions,
   updateSelf,
 } from "../controllers/user.controller";
 import { checkAuth } from "../middlewares/auth";
@@ -246,7 +248,14 @@ userRouter.delete("/", checkAuth, deleteSelf);
  *      500:
  *        description: Some error occurred
  */
-userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
+userRouter.get("/all", checkAuth, isAdminOrSuperAdmin, showAll);
+userRouter.put(
+  "/update-permissions/:_id",
+  checkAuth,
+  isAdminOrSuperAdmin,
+  updatePermissions
+);
+userRouter.get("/:_id", checkAuth, isAdminOrSuperAdmin, showOne);
 
 /**
  * @openapi

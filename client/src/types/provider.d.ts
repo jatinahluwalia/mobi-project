@@ -1,13 +1,13 @@
-export type User = null | {
+declare type ContextUser = null | {
   _id: string;
   token: string;
 };
 
-export type Action = {
+declare type Action = {
   type: "LOGIN" | "LOGOUT";
-  payload: User;
+  payload: ContextUser;
 };
-export type Context = {
-  user: User;
+declare type Context = {
+  user: ContextUser;
   dispatch: React.Dispatch<Action>;
 };

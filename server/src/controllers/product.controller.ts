@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Product from "../models/products.model";
+import { create } from "domain";
 
 export const displayAll = async (req: Request, res: Response) => {
   try {
@@ -34,6 +35,7 @@ export const addProduct = async (req: Request, res: Response) => {
     await Product.create(req.body);
     return res.status(200).json({ message: "Product created successfully" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ error: error.message });
   }
 };
