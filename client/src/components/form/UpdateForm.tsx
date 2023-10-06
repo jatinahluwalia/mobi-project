@@ -4,7 +4,6 @@ import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { UpdateValidationError } from "../../types/validations";
 
 const nameRegex = /^[A-Za-z ]+$/;
 

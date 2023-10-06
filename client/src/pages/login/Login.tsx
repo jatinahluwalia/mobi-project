@@ -12,8 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { User } from "../../types/provider";
-import { LoginValidationError } from "../../types/validations";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -51,7 +49,7 @@ const Login = () => {
   const onSubmit = async (data: Schema) => {
     try {
       const res = await axios.post("/api/user/login", data);
-      const user = res.data as User;
+      const user = res.data as ContextUser;
       auth?.dispatch({
         type: "LOGIN",
         payload: user,

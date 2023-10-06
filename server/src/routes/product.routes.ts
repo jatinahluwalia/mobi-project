@@ -8,6 +8,7 @@ import {
   updateProduct,
 } from "../controllers/product.controller";
 import { checkAuth } from "../middlewares/auth";
+import { checkPermission } from "../middlewares/permissions";
 
 const productRouter = express.Router();
 
@@ -32,7 +33,7 @@ const productRouter = express.Router();
  *      500:
  *        description: Some error occurred
  */
-productRouter.get("/", displayAll);
+productRouter.get("/", checkAuth, checkPermission("product-view"), displayAll);
 
 /**
  * @openapi
@@ -55,7 +56,12 @@ productRouter.get("/", displayAll);
  *      500:
  *        description: Some error occurred
  */
-productRouter.get("/:_id", displayOne);
+productRouter.get(
+  "/:_id",
+  checkAuth,
+  checkPermission("product-view"),
+  displayOne
+);
 
 //admin routes
 
@@ -94,7 +100,7 @@ productRouter.get("/:_id", displayOne);
  *      500:
  *        description: Some error occurred
  */
-productRouter.post("/", checkAuth, isAdminOrSuperAdmin, addProduct);
+productRouter.post("/", checkAuth, checkPermission("product-add"), addProduct);
 
 /**
  * @openapi
@@ -140,7 +146,12 @@ productRouter.post("/", checkAuth, isAdminOrSuperAdmin, addProduct);
  *      500:
  *        description: Some error occurred
  */
-productRouter.put("/:_id", checkAuth, isAdminOrSuperAdmin, updateProduct);
+productRouter.put(
+  "/:_id",
+  checkAuth,
+  checkPermission("product-edit"),
+  updateProduct
+);
 
 //superadmin routes
 
@@ -169,6 +180,11 @@ productRouter.put("/:_id", checkAuth, isAdminOrSuperAdmin, updateProduct);
  *      500:
  *        description: Some error occurred
  */
-productRouter.delete("/:_id", checkAuth, isSuperAdmin, deleteProduct);
+productRouter.delete(
+  "/:_id",
+  checkAuth,
+  checkPermission("product-delete"),
+  deleteProduct
+);
 
 export default productRouter;

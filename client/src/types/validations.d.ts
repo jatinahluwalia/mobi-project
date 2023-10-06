@@ -1,8 +1,8 @@
-export type LoginValidationError = {
+declare type LoginValidationError = {
   field: "email" | "password" | "root";
   error: string;
 };
-export type SignupValidationError = {
+declare type SignupValidationError = {
   field:
     | "email"
     | "password"
@@ -13,7 +13,7 @@ export type SignupValidationError = {
   error: string;
 };
 
-export type UpdateValidationError = {
+declare type UpdateValidationError = {
   field: "email" | "fullName" | "phone" | "root" | `root.${string}`;
   error: string;
 };
