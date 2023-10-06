@@ -1,9 +1,10 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
   IconButton,
+  Pagination,
   Paper,
   Stack,
   Table,
@@ -18,25 +19,33 @@ import {
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
 import { Add, Edit, Visibility } from "@mui/icons-material";
+
 const Users = () => {
+  const [pageNum, setPageNum] = useState(1);
   const navigate = useNavigate();
-  const [users, setUsers] = useState([] as User[]);
+  const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [user, setUser] = useState<User>({} as User);
+  const getData = async () => {
+    const res = await axios.get("/api/user/all/?page=" + pageNum);
+    const data = res.data;
+    setUsers(data.users);
+  };
+  const getUser = async () => {
+    const res = await axios.get("/api/user");
+    const data = res.data;
+    setUser(data);
+  };
   useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("/api/user/all");
-      const data = res.data;
-      setUsers(data.users);
-    };
-    getData();
-    const getUser = async () => {
-      const res = await axios.get("/api/user");
-      const data = res.data;
-      setUser(data);
-    };
     getUser();
   }, []);
 
+  useEffect(() => {
+    getData();
+  }, [pageNum]);
+
+  const handlePageChange = (_e: ChangeEvent<unknown>, pageNumber: number) => {
+    setPageNum(pageNumber);
+  };
   if (user?.role !== "superadmin")
     return (
       <Typography variant="h3" padding={5}>
@@ -51,7 +60,7 @@ const Users = () => {
       <Stack gap={2} direction={"row"}>
         {["superadmin"].includes(String(user?.role)) && (
           <Button
-            onClick={() => navigate("/dashboard/signup-admin  ")}
+            onClick={() => navigate("/dashboard/signup-admin")}
             endIcon={<Add />}
             sx={{ marginBottom: 5 }}
             variant="outlined"
@@ -71,11 +80,11 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users?.map(
-              (userByID) =>
+            {users?.docs.map(
+              (userByID, index) =>
                 userByID.role !== "superadmin" && (
                   <TableRow
-                    key={userByID.fullName}
+                    key={`${userByID.fullName}-${index}`}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="left">{userByID.fullName}</TableCell>
@@ -115,6 +124,20 @@ const Users = () => {
             )}
           </TableBody>
         </Table>
+        <Stack
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "row",
+          }}
+          padding={5}
+        >
+          <Pagination
+            count={users?.totalPages}
+            page={pageNum}
+            onChange={handlePageChange}
+          />
+        </Stack>
       </TableContainer>
     </motion.section>
   );

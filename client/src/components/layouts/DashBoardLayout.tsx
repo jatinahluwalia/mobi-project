@@ -142,11 +142,13 @@ const DashBoardLayout = () => {
                     <EditIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Delete your account" placement="top">
-                  <IconButton onClick={handleDelete}>
-                    <DeleteIcon fontSize="inherit" />
-                  </IconButton>
-                </Tooltip>
+                {user?.role !== "superadmin" && (
+                  <Tooltip title="Delete your account" placement="top">
+                    <IconButton onClick={handleDelete}>
+                      <DeleteIcon fontSize="inherit" />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 <Button
                   variant="outlined"
                   type="button"

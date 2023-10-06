@@ -1,4 +1,16 @@
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -9,20 +21,20 @@ const User = () => {
   const { _id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [authUser, setAuthUser] = useState<User | null>(null);
+  const getUser = async () => {
+    const res = await axios.get("/api/user/" + _id);
+    const data = res.data;
+    setUser(data.user);
+  };
+  const getAuthUser = async () => {
+    const res = await axios.get("/api/user/");
+    const data = res.data;
+    setAuthUser(data);
+  };
   useEffect(() => {
-    const getUser = async () => {
-      const res = await axios.get("/api/user/" + _id);
-      const data = res.data;
-      setUser(data.user);
-    };
     getUser();
-    const getAuthUser = async () => {
-      const res = await axios.get("/api/user/");
-      const data = res.data;
-      setAuthUser(data);
-    };
     getAuthUser();
-  });
+  }, []);
   if (authUser?.role !== "superadmin")
     return (
       <Typography variant="h3" padding={5}>
@@ -30,7 +42,7 @@ const User = () => {
       </Typography>
     );
   return (
-    <motion.div {...routingVariants} className="p-5">
+    <motion.div {...routingVariants} className="p-5 w-full">
       <Typography variant="h2" marginBottom={5}>
         {user?.fullName.split(" ")[0]} Profile
       </Typography>
@@ -56,6 +68,56 @@ const User = () => {
           <Typography variant="body1">{user?.phone}</Typography>
         </Stack>
       </Box>
+      <TableContainer component={Paper} sx={{ width: "100%", marginTop: 5 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Permissions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow
+              key="product"
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell align="left">Product Management</TableCell>
+              <TableCell align="left">
+                <Stack direction="row" spacing={2}>
+                  <Stack direction={"column"} alignItems={"center"}>
+                    <Checkbox
+                      checked={user?.permissions.includes("product-view")}
+                      disabled
+                    />
+                    <Typography>View</Typography>
+                  </Stack>
+                  <Stack direction={"column"} alignItems={"center"}>
+                    <Checkbox
+                      checked={user?.permissions.includes("product-edit")}
+                      disabled
+                    />
+                    <Typography>Edit</Typography>
+                  </Stack>
+                  <Stack direction={"column"} alignItems={"center"}>
+                    <Checkbox
+                      checked={user?.permissions.includes("product-add")}
+                      disabled
+                    />
+                    <Typography>Add</Typography>
+                  </Stack>
+                  <Stack direction={"column"} alignItems={"center"}>
+                    <Checkbox
+                      checked={user?.permissions.includes("product-delete")}
+                      disabled
+                    />
+                    <Typography>Delete</Typography>
+                  </Stack>
+                </Stack>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </motion.div>
   );
 };

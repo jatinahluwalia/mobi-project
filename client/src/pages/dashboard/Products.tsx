@@ -1,9 +1,10 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
   IconButton,
+  Pagination,
   Paper,
   Stack,
   Table,
@@ -19,37 +20,44 @@ import { routingVariants } from "../../utils/animation";
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 const Products = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([] as Product[]);
+  const [pageNum, setPageNum] = useState(1);
+  const [products, setProducts] = useState<PaginatedProducts | null>(null);
   const [user, setUser] = useState<User>({} as User);
+  const getData = async () => {
+    const res = await axios.get("/api/product/?page=" + pageNum);
+    const data = res.data;
+    setProducts(data.products);
+  };
+  const getUser = async () => {
+    const res = await axios.get("/api/user");
+    const data = res.data;
+    setUser(data);
+  };
   useEffect(() => {
-    const getData = async () => {
-      const res = await axios.get("/api/product");
-      const data = res.data;
-      setProducts(data.products);
-    };
-    getData();
-    const getUser = async () => {
-      const res = await axios.get("/api/user");
-      const data = res.data;
-      setUser(data);
-    };
     getUser();
   }, []);
+  useEffect(() => {
+    getData();
+  }, [pageNum]);
 
   const handleDelete = async (id: string) => {
     try {
       const sure = confirm("Sure you want to delete this product?");
       if (sure) {
         await axios.delete(`/api/product/${id}`);
-        navigate(0);
+        getData();
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handlePageChange = (_e: ChangeEvent<unknown>, pageNumber: number) => {
+    setPageNum(pageNumber);
+  };
   return (
     <motion.section {...routingVariants} className="p-5 grow">
-      <Typography variant="h2" marginBlock={5}>
+      <Typography variant="h2" marginY={5}>
         Products Management
       </Typography>
       {user?.permissions?.includes("product-add") && (
@@ -73,9 +81,9 @@ const Products = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
+            {products?.docs.map((product, index) => (
               <TableRow
-                key={product.name}
+                key={`${product.name}-${index}`}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">{product.name}</TableCell>
@@ -107,6 +115,20 @@ const Products = () => {
             ))}
           </TableBody>
         </Table>
+        <Stack
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "row",
+          }}
+          padding={5}
+        >
+          <Pagination
+            count={products?.totalPages}
+            page={pageNum}
+            onChange={handlePageChange}
+          />
+        </Stack>
       </TableContainer>
     </motion.section>
   );

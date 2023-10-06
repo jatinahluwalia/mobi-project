@@ -5,3 +5,16 @@ declare type Product = {
   image: string;
   _id: string;
 };
+
+declare type PaginatedProducts = {
+  docs: Product[];
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
+  nextPage: null | number;
+  page: number;
+  pagingCounter: number;
+  prevPage: null | number;
+  totalDocs: number;
+  totalPages: number;
+};
