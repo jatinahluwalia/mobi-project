@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, TextField, TextareaAutosize } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
