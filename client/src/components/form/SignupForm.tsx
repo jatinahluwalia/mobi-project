@@ -13,7 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import { KeyboardEventHandler, useState } from "react";
+import { blockInvalidChar } from "../../utils/phone";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -57,7 +58,6 @@ const SignupForm = ({ url }: Props) => {
       email: "",
       password: "",
       fullName: "",
-      phone: undefined,
     },
     mode: "all",
     resolver: zodResolver(schema),
@@ -78,6 +78,7 @@ const SignupForm = ({ url }: Props) => {
       }
     }
   };
+
   return (
     <Box
       className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
@@ -92,12 +93,16 @@ const SignupForm = ({ url }: Props) => {
         label="Full Name"
       />
       <TextField
+        onKeyDown={blockInvalidChar}
         {...register("phone", { valueAsNumber: true })}
         type="number"
         error={!!errors.phone}
         helperText={errors.phone?.message}
         variant="standard"
         label="Phone number"
+        InputProps={{
+          startAdornment: <Typography marginRight={1}>+91</Typography>,
+        }}
       />
       <TextField
         {...register("email")}
@@ -127,7 +132,7 @@ const SignupForm = ({ url }: Props) => {
       />
       {!url.includes("admin") && (
         <Typography variant="body2">
-          Already have an account?{" "}
+          Already have an account?
           <Link onClick={() => navigate("/login")} className="cursor-pointer">
             Login
           </Link>

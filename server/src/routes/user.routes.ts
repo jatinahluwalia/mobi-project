@@ -2,8 +2,10 @@ import express from "express";
 import {
   deleteOtherUser,
   deleteSelf,
+  forgotPass,
   login,
   profile,
+  resetPass,
   showAll,
   showOne,
   signup,
@@ -13,11 +15,8 @@ import {
   updateSelf,
 } from "../controllers/user.controller";
 import { checkAuth } from "../middlewares/auth";
-import {
-  isAdmin,
-  isAdminOrSuperAdmin,
-  isSuperAdmin,
-} from "../middlewares/roles";
+import { isSuperAdmin } from "../middlewares/roles";
+import { verifyForgetToken } from "../middlewares/forget";
 const userRouter = express.Router();
 
 //Auth routes
@@ -188,6 +187,9 @@ userRouter.put("/", checkAuth, updateSelf);
  */
 userRouter.delete("/", checkAuth, deleteSelf);
 
+userRouter.post("/forgot-pass", forgotPass);
+userRouter.post("/reset", verifyForgetToken, resetPass);
+
 /**
  * @openapi
  * /api/user/all:
@@ -206,14 +208,14 @@ userRouter.delete("/", checkAuth, deleteSelf);
  *      500:
  *        description: Some error occurred
  */
-userRouter.get("/all", checkAuth, isAdminOrSuperAdmin, showAll);
+userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
 userRouter.put(
   "/update-permissions/:_id",
   checkAuth,
-  isAdminOrSuperAdmin,
+  isSuperAdmin,
   updatePermissions
 );
-userRouter.get("/:_id", checkAuth, isAdminOrSuperAdmin, showOne);
+userRouter.get("/:_id", checkAuth, isSuperAdmin, showOne);
 
 /**
  * @openapi
@@ -254,7 +256,7 @@ userRouter.get("/:_id", checkAuth, isAdminOrSuperAdmin, showOne);
  *      500:
  *        description: Some error occurred
  */
-userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
+userRouter.put("/:id", checkAuth, isSuperAdmin, updateOtherUser);
 
 /**
  * @openapi
@@ -281,18 +283,6 @@ userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
  *      500:
  *        description: Some error occurred
  */
-userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
-
-// //User specific routes
-
-// userRouter.get("/", checkAuth, profile);
-// userRouter.put("/", checkAuth, updateSelf);
-// userRouter.delete("/", checkAuth, deleteSelf);
-
-// //Admin specific routes
-
-// userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
-// userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
-// userRouter.delete("/:id", checkAuth, isAdmin, deleteOtherUser);
+userRouter.delete("/:id", checkAuth, isSuperAdmin, deleteOtherUser);
 
 export default userRouter;

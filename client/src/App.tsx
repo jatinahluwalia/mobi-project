@@ -18,6 +18,10 @@ import SignupAdmin from "./pages/dashboard/SignupAdmin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Users from "./pages/dashboard/Users";
 import UserPermissions from "./pages/dashboard/UserPermissions";
+import Profile from "./pages/dashboard/Profile";
+import User from "./pages/dashboard/User";
+import Forgot from "./pages/forgot/Forgot";
+import Reset from "./pages/forgot/Reset";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -43,6 +47,8 @@ function App() {
         path="/signup"
         element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
       />
+      <Route path="/forgot" element={<Forgot />} />
+      <Route path="/reset" element={<Reset />} />
 
       {auth.user && (
         <Route path="/dashboard" element={<DashBoardLayout />}>
@@ -54,6 +60,8 @@ function App() {
           <Route path="products/add" element={<AddProduct />} />
           <Route path="signup-admin" element={<SignupAdmin />} />
           <Route path="users/permissions/:id" element={<UserPermissions />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="profile/:_id" element={<User />} />
         </Route>
       )}
     </Routes>

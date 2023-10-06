@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import { Add, Edit, Visibility } from "@mui/icons-material";
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([] as User[]);
@@ -37,17 +37,12 @@ const Users = () => {
     getUser();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const sure = confirm("Sure you want to delete this product?");
-      if (sure) {
-        await axios.delete(`/api/product/${id}`);
-        navigate(0);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  if (user?.role !== "superadmin")
+    return (
+      <Typography variant="h3" padding={5}>
+        You are not authorized to view this page
+      </Typography>
+    );
   return (
     <motion.section {...routingVariants} className="p-5 grow">
       <Typography variant="h2" marginY={5}>
@@ -92,9 +87,15 @@ const Users = () => {
                     </TableCell>
                     <TableCell align="left">
                       <Stack direction={"row"} gap={2}>
-                        {/* <IconButton>
-                      <Visibility />
-                    </IconButton> */}
+                        <Tooltip title="View Profile">
+                          <IconButton
+                            onClick={() =>
+                              navigate("/dashboard/profile/" + userByID._id)
+                            }
+                          >
+                            <Visibility />
+                          </IconButton>
+                        </Tooltip>
 
                         <Tooltip title="Edit Permissions">
                           <IconButton
@@ -107,13 +108,6 @@ const Users = () => {
                             <Edit />
                           </IconButton>
                         </Tooltip>
-                        {userByID?.permissions?.includes("user-delete") && (
-                          <IconButton
-                            onClick={() => handleDelete(userByID._id)}
-                          >
-                            <Delete />
-                          </IconButton>
-                        )}
                       </Stack>
                     </TableCell>
                   </TableRow>

@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { blockInvalidChar } from "../../utils/phone";
 const AddProductForm = () => {
   const navigate = useNavigate();
   const schema = z.object({
@@ -67,6 +68,7 @@ const AddProductForm = () => {
       </div>
       {errors.detail && <p className="text-red-600">{errors.detail.message}</p>}
       <TextField
+        onKeyDown={blockInvalidChar}
         {...register("price", { valueAsNumber: true })}
         error={!!errors.price}
         helperText={errors.price?.message}

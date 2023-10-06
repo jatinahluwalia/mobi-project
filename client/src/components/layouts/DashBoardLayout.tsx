@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Logout } from "@mui/icons-material";
 
 const DashBoardLayout = () => {
   const [anchor, setAnchor] = useState<null | HTMLButtonElement>(null);
@@ -74,6 +75,9 @@ const DashBoardLayout = () => {
     <div className="h-screen flex flex-col">
       {user && (
         <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200 px-5">
+          <IconButton onClick={() => navigate("/dashboard")}>
+            <Avatar src="/mobi.png"></Avatar>
+          </IconButton>
           <IconButton onClick={handleOpen}>
             <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
           </IconButton>
@@ -95,7 +99,14 @@ const DashBoardLayout = () => {
                   alignItems: "center",
                 }}
               >
-                <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
+                <IconButton
+                  onClick={() => {
+                    navigate("/dashboard/profile");
+                    handleClose();
+                  }}
+                >
+                  <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
+                </IconButton>
                 <Typography
                   variant="body1"
                   className="text-black"
@@ -136,14 +147,18 @@ const DashBoardLayout = () => {
                     <DeleteIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  onClick={logout}
+                  endIcon={<Logout />}
+                  color="error"
+                >
+                  Logout
+                </Button>
               </CardActions>
             </Card>
           </Popover>
-          <div className="flex items-center space-x-4">
-            <Button variant="contained" type="button" onClick={logout}>
-              Logout
-            </Button>
-          </div>
         </div>
       )}
       <section className="grid grid-cols-[300px_1fr] grow">

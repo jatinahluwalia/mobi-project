@@ -4,6 +4,7 @@ import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { blockInvalidChar } from "../../utils/phone";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -76,6 +77,7 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
         label="Full Name"
       />
       <TextField
+        onKeyDown={blockInvalidChar}
         {...register("phone", { valueAsNumber: true })}
         type="number"
         error={!!errors.phone}

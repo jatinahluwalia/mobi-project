@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { transporter } from "../config/mail";
 
 export const login = async function (req: Request, res: Response) {
   try {
@@ -134,6 +135,13 @@ export const signupAdmin = async (req: Request, res: Response) => {
       role: "admin",
       permissions,
     });
+    transporter.sendMail({
+      to: email,
+      html: `<h1>Signed Up Successfully for Mobiloitte Admin Account</h1>
+      <p>Email: ${email}</p>
+      <p>Password: ${password}</p>
+      `,
+    });
     return res.status(200).json({ message: "Admin created successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
@@ -222,5 +230,47 @@ export const updatePermissions = async (req: Request, res: Response) => {
     return res.json({ message: "Permissions updated successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
+  }
+};
+
+export const forgotPass = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(406).json({ error: "User not found", field: "email" });
+    const token = jwt.sign({ email }, String(process.env.JWT_SECRET));
+    transporter.sendMail({
+      to: email,
+      html: `<h1>Password reset link</h1>
+        <a href="${process.env.BASE_URL}/reset?token=${token}">Click here</a>
+        `,
+    });
+    return res.status(200).json({ message: "Mail sent" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const resetPass = async (req: Request, res: Response) => {
+  try {
+    //@ts-ignore
+    const { email } = req;
+    const { password, confirmPassword } = req.body;
+    if (password !== confirmPassword)
+      return res
+        .status(406)
+        .json({ error: "Passwords doesn't match", field: "confirmPassword" });
+    if (!validator.isStrongPassword(String(password)))
+      return res
+        .status(406)
+        .json({ error: "Please enter a string password", field: "password" });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await User.findOneAndUpdate({ email }, { hashedPassword });
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Server Error" });
   }
 };

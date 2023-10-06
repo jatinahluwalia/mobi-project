@@ -183,6 +183,7 @@ const SignupAdmin = () => {
           helperText={errors.phone?.message}
           variant="standard"
           label="Phone number"
+          InputProps={{ startAdornment: "+91" }}
         />
         <TextField
           {...register("email")}

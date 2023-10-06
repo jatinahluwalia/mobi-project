@@ -124,6 +124,12 @@ const Login = () => {
                 Signup
               </Link>
             </Typography>
+            <Link
+              onClick={() => navigate("/forgot")}
+              className="cursor-pointer"
+            >
+              Forgot Password?
+            </Link>
             <Button variant="contained" type="submit">
               Login
             </Button>
