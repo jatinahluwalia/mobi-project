@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     role: { type: String, default: "user" },
     permissions: [String],
+    forgot: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

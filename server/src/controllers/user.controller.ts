@@ -236,7 +236,7 @@ export const updatePermissions = async (req: Request, res: Response) => {
 export const forgotPass = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOneAndUpdate({ email }, { forgot: true });
     if (!user)
       return res.status(406).json({ error: "User not found", field: "email" });
     const token = jwt.sign({ email }, String(process.env.JWT_SECRET));
@@ -256,6 +256,9 @@ export const resetPass = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
     const { email } = req;
+    const user = await User.findOne({ email });
+    if (!user?.forgot)
+      return res.status(406).json({ error: "Please generate link again" });
     const { password, confirmPassword } = req.body;
     if (password !== confirmPassword)
       return res
@@ -267,7 +270,9 @@ export const resetPass = async (req: Request, res: Response) => {
         .json({ error: "Please enter a string password", field: "password" });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    await User.findOneAndUpdate({ email }, { hashedPassword });
+    user.hashedPassword = hashedPassword;
+    user.forgot = false;
+    await user.save();
     return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     console.log(error);
