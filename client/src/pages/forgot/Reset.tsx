@@ -21,7 +21,7 @@ const Reset = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  if (!token) return navigate("/");
+  if (!token) navigate("/");
   const schema = z
     .object({
       password: z
