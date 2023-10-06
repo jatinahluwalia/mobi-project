@@ -50,21 +50,11 @@ const Users = () => {
   };
   return (
     <motion.section {...routingVariants} className="p-5 grow">
-      <Typography variant="h2" marginBlock={5}>
+      <Typography variant="h2" marginY={5}>
         Users Management
       </Typography>
       <Stack gap={2} direction={"row"}>
-        {user?.role === "superadmin" && (
-          <Button
-            onClick={() => navigate("/dashboard/signup-super-admin")}
-            endIcon={<Add />}
-            sx={{ marginBottom: 5 }}
-            variant="outlined"
-          >
-            Add Super Admin
-          </Button>
-        )}
-        {["superadmin", "admin"].includes(String(user?.role)) && (
+        {["superadmin"].includes(String(user?.role)) && (
           <Button
             onClick={() => navigate("/dashboard/signup-admin  ")}
             endIcon={<Add />}
@@ -86,44 +76,49 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users?.map((user) => (
-              <TableRow
-                key={user.fullName}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell align="left">{user.fullName}</TableCell>
-                <TableCell align="left">{user.email}</TableCell>
-                <TableCell align="left">
-                  {user.role === "superadmin" && "Super Admin"}
-                  {user.role === "admin" && "Admin"}
-                  {user.role === "user" && "User"}
-                </TableCell>
-                <TableCell align="left">
-                  <Stack direction={"row"} gap={2}>
-                    {/* <IconButton>
+            {users?.map(
+              (userByID) =>
+                userByID.role !== "superadmin" && (
+                  <TableRow
+                    key={userByID.fullName}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell align="left">{userByID.fullName}</TableCell>
+                    <TableCell align="left">{userByID.email}</TableCell>
+                    <TableCell align="left">
+                      {userByID.role === "superadmin" && "Super Admin"}
+                      {userByID.role === "admin" && "Admin"}
+                      {userByID.role === "user" && "User"}
+                    </TableCell>
+                    <TableCell align="left">
+                      <Stack direction={"row"} gap={2}>
+                        {/* <IconButton>
                       <Visibility />
                     </IconButton> */}
 
-                    {user?.role === "superadmin" && (
-                      <Tooltip title="Edit Permissions">
-                        <IconButton
-                          onClick={() =>
-                            navigate("/dashboard/users/permissions/" + user._id)
-                          }
-                        >
-                          <Edit />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {user?.permissions?.includes("user-delete") && (
-                      <IconButton onClick={() => handleDelete(user._id)}>
-                        <Delete />
-                      </IconButton>
-                    )}
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
+                        <Tooltip title="Edit Permissions">
+                          <IconButton
+                            onClick={() =>
+                              navigate(
+                                "/dashboard/users/permissions/" + userByID._id
+                              )
+                            }
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        {userByID?.permissions?.includes("user-delete") && (
+                          <IconButton
+                            onClick={() => handleDelete(userByID._id)}
+                          >
+                            <Delete />
+                          </IconButton>
+                        )}
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )
+            )}
           </TableBody>
         </Table>
       </TableContainer>

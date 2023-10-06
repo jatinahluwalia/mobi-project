@@ -8,7 +8,6 @@ import {
   showOne,
   signup,
   signupAdmin,
-  signupSuperAdmin,
   updateOtherUser,
   updatePermissions,
   updateSelf,
@@ -119,48 +118,7 @@ userRouter.post("/signup", signup);
  *      500:
  *        description: Some error occurred
  */
-userRouter.post("/signup-admin", checkAuth, isAdminOrSuperAdmin, signupAdmin);
-
-/**
- * @openapi
- * /api/user/signup-super-admin:
- *  post:
- *    summary: Signup super admin
- *    security:
- *      bearerAuth: []
- *    description: Signup super admin
- *    requestBody:
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              email:
- *                type: string
- *                required: true
- *              password:
- *                type: string
- *                required: true
- *              phone:
- *                type: string
- *                required: true
- *              fullName:
- *                type: string
- *                required: true
- *    responses:
- *      200:
- *        description: Super admin signed up successfully
- *      406:
- *        description: Invalid credentials
- *      500:
- *        description: Some error occurred
- */
-userRouter.post(
-  "/signup-super-admin",
-  checkAuth,
-  isSuperAdmin,
-  signupSuperAdmin
-);
+userRouter.post("/signup-admin", checkAuth, isSuperAdmin, signupAdmin);
 
 /**
  * @openapi

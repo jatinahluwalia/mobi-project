@@ -116,7 +116,6 @@ const UserPermissions = () => {
       }
     });
   }, [deleteChecked]);
-  console.log(permissions);
 
   const handleSave = async () => {
     try {
@@ -130,7 +129,7 @@ const UserPermissions = () => {
   if (user?.role !== "superadmin")
     return (
       <motion.section {...routingVariants} className="p-5 grow">
-        <Typography variant="h2" marginBlock={5}>
+        <Typography variant="h2" marginY={5}>
           User Permissions Management
         </Typography>
         <Typography variant="h4" marginBottom={5}>
@@ -143,7 +142,7 @@ const UserPermissions = () => {
     );
   return (
     <motion.section {...routingVariants} className="p-5 grow">
-      <Typography variant="h2" marginBlock={5}>
+      <Typography variant="h2" marginY={5}>
         User Permissions Management
       </Typography>
       <Typography variant="h4" marginBottom={5}>

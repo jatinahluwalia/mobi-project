@@ -96,7 +96,7 @@ export const signup = async (req: Request, res: Response) => {
 
 export const signupAdmin = async (req: Request, res: Response) => {
   try {
-    const { email, password, fullName, phone } = req.body;
+    const { email, password, fullName, phone, permissions } = req.body;
     if (!validator.isEmail(email)) {
       return res
         .status(406)
@@ -132,62 +132,9 @@ export const signupAdmin = async (req: Request, res: Response) => {
       fullName,
       phone,
       role: "admin",
-      permissions: ["product-view", "product-add", "product-edit"],
+      permissions,
     });
     return res.status(200).json({ message: "Admin created successfully" });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-export const signupSuperAdmin = async (req: Request, res: Response) => {
-  try {
-    const { email, password, fullName, phone } = req.body;
-    if (!validator.isEmail(email)) {
-      return res
-        .status(406)
-        .json({ error: "Please enter a valid email.", field: "email" });
-    }
-    if (!validator.isStrongPassword(password)) {
-      return res
-        .status(406)
-        .json({ error: "Please enter a strong password.", field: "password" });
-    }
-
-    if (!validator.isMobilePhone(phone)) {
-      return res
-        .status(406)
-        .json({ error: "Please enter a valid phone number.", field: "phone" });
-    }
-    if (!validator.isAlpha(fullName)) {
-      return res
-        .status(406)
-        .json({ error: "Please enter a valid name.", field: "fullName" });
-    }
-    const emailExists = await User.findOne({ email });
-    if (emailExists) {
-      return res
-        .status(406)
-        .json({ error: "User already exists.", field: "email" });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    await User.create({
-      email,
-      hashedPassword,
-      fullName,
-      phone,
-      role: "superadmin",
-      permissions: [
-        "product-view",
-        "product-add",
-        "product-edit",
-        "product-delete",
-      ],
-    });
-    return res
-      .status(200)
-      .json({ message: "Super Admin created successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

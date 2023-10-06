@@ -14,7 +14,7 @@ const Dashboard = () => {
     });
 
     axios.get("/api/user/all").then((res) => {
-      setUsers(res.data);
+      setUsers(res.data.users);
     });
   }, []);
 
@@ -37,7 +37,7 @@ const Dashboard = () => {
           <Card>
             <CardContent>
               <Link
-                to={"/dashboard/products"}
+                to={"/dashboard/users"}
                 className="flex flex-col items-center"
               >
                 <Typography variant="h4"> Total Users</Typography>

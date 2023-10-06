@@ -100,7 +100,7 @@ const DashBoardLayout = () => {
                 </Typography>
               </CardContent>
               <List className="w-full">
-                {["admin", "superadmin"].includes(String(user?.role)) && (
+                {["superadmin"].includes(String(user?.role)) && (
                   <ListItem disablePadding>
                     <ListItemButton
                       onClick={() => navigate("/dashboard/signup-admin")}
@@ -108,18 +108,6 @@ const DashBoardLayout = () => {
                       <ListItemText
                         primary="Add Admin"
                         secondary="Add another admin"
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                )}
-                {user?.role === "superadmin" && (
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => navigate("/dashboard/signup-super-admin")}
-                    >
-                      <ListItemText
-                        primary="Add Super Admin"
-                        secondary="Add another super admin"
                       />
                     </ListItemButton>
                   </ListItem>

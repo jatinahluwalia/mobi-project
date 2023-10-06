@@ -65,9 +65,7 @@ const SignupForm = ({ url }: Props) => {
 
   const onSubmit = async (data: Schema) => {
     try {
-      await axios.post(url, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(url, data);
       navigate("/login");
     } catch (error) {
       const axiosError = error as AxiosError<SignupValidationError>;

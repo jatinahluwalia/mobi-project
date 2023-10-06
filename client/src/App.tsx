@@ -15,7 +15,6 @@ import Products from "./pages/dashboard/Products";
 import UpdateProduct from "./pages/dashboard/UpdateProduct";
 import AddProduct from "./pages/dashboard/AddProduct";
 import SignupAdmin from "./pages/dashboard/SignupAdmin";
-import SignupSuperAdmin from "./pages/dashboard/SignupSuperAdmin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Users from "./pages/dashboard/Users";
 import UserPermissions from "./pages/dashboard/UserPermissions";
@@ -54,7 +53,6 @@ function App() {
           <Route path="products/update/:_id" element={<UpdateProduct />} />
           <Route path="products/add" element={<AddProduct />} />
           <Route path="signup-admin" element={<SignupAdmin />} />
-          <Route path="signup-super-admin" element={<SignupSuperAdmin />} />
           <Route path="users/permissions/:id" element={<UserPermissions />} />
         </Route>
       )}
