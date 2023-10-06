@@ -2,7 +2,7 @@ declare type Product = {
   name: string;
   detail: string;
   price: number;
-  image: string;
+  hero: string;
   _id: string;
 };
 

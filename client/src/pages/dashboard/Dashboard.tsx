@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 import { routingVariants } from "../../utils/animation";
 
 const Dashboard = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<PaginatedProducts | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<PaginatedUsers | null>(null);
   useEffect(() => {
     axios.get("/api/product").then((res) => {
       setProducts(res.data.products);
@@ -36,7 +36,7 @@ const Dashboard = () => {
               >
                 <CardContent>
                   <Typography variant="h4"> Total Products</Typography>
-                  <Typography variant="h5">{products.length}</Typography>
+                  <Typography variant="h5">{products?.totalDocs}</Typography>
                 </CardContent>
               </Link>
             </Card>
@@ -49,7 +49,7 @@ const Dashboard = () => {
                   className="flex flex-col items-center"
                 >
                   <Typography variant="h4"> Total Users</Typography>
-                  <Typography variant="h5">{users.length}</Typography>
+                  <Typography variant="h5">{users?.totalDocs}</Typography>
                 </Link>
               </CardContent>
             </Card>

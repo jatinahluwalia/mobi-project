@@ -25,7 +25,7 @@ export const login = async function (req: Request, res: Response) {
         .status(406)
         .json({ error: "User does not exist", field: "email" });
     }
-    const { hashedPassword, _id, ...restUser } = user._doc;
+    const { hashedPassword, _id } = user._doc;
     const matched = await bcrypt.compare(password, hashedPassword);
     if (!matched) {
       return res
@@ -34,7 +34,7 @@ export const login = async function (req: Request, res: Response) {
     }
     const token = jwt.sign(
       { _id: _id.toString() },
-      process.env.JWT_SECRET || "uirbvvubvuebuebu",
+      String(process.env.JWT_SECRET),
       {
         expiresIn: "1d",
       }
@@ -42,7 +42,6 @@ export const login = async function (req: Request, res: Response) {
 
     return res.status(200).json({
       _id,
-      ...restUser,
       token,
     });
   } catch (error: any) {
@@ -182,7 +181,7 @@ export const profile = async (req: Request, res: Response) => {
 export const updateOtherUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await User.findOneAndUpdate({ _id: id, role: "user" }, req.body);
+    await User.findOneAndUpdate({ _id: id }, req.body);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -191,7 +190,8 @@ export const updateOtherUser = async (req: Request, res: Response) => {
 export const deleteOtherUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await User.findOneAndDelete({ _id: id, role: "user" });
+    await User.findOneAndDelete({ _id: id });
+    return res.status(200).json({ message: "Account deleted successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -213,20 +213,6 @@ export const showOne = async (req: Request, res: Response) => {
     const { _id } = req.params;
     const user = await User.findById(_id);
     return res.json({ user });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-export const updatePermissions = async (req: Request, res: Response) => {
-  try {
-    console.log("UPDATE PERMISSIONS");
-    const { _id } = req.params;
-    const { permissions } = req.body;
-    await User.findByIdAndUpdate(_id, {
-      permissions: permissions,
-    });
-    return res.json({ message: "Permissions updated successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
@@ -266,7 +252,15 @@ export const resetPass = async (req: Request, res: Response) => {
     if (!validator.isStrongPassword(String(password)))
       return res
         .status(406)
-        .json({ error: "Please enter a string password", field: "password" });
+        .json({ error: "Please enter a strong password", field: "password" });
+    const sameAsOld = await bcrypt.compare(password, user?.hashedPassword);
+    if (sameAsOld)
+      return res
+        .status(406)
+        .json({
+          error: "Please cannot be the previous one",
+          field: "password",
+        });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     user.hashedPassword = hashedPassword;

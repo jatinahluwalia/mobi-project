@@ -6,13 +6,14 @@ import {
   CardContent,
   IconButton,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios, { AxiosError } from "axios";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
@@ -21,7 +22,6 @@ const Reset = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  if (!token) navigate("/");
   const schema = z
     .object({
       password: z
@@ -37,7 +37,7 @@ const Reset = () => {
     })
     .refine((values) => values.password === values.confirmPassword, {
       message: "Passwords must match",
-      path: ["confirmPassword"],
+      path: ["confirmPassword", "password"],
     });
 
   type Values = z.infer<typeof schema>;
@@ -45,6 +45,7 @@ const Reset = () => {
     register,
     formState: { errors },
     handleSubmit,
+    setError,
   } = useForm<Values>({
     defaultValues: {
       password: "",
@@ -53,6 +54,8 @@ const Reset = () => {
     resolver: zodResolver(schema),
     mode: "all",
   });
+  const [isVisible, setIsVisible] = useState(false);
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false);
   const onSubmit = async (values: Values) => {
     try {
       await axios.post("/api/user/reset", values, { headers: { token } });
@@ -61,15 +64,22 @@ const Reset = () => {
         navigate("/login");
       }, 2000);
     } catch (err) {
-      const error = err as AxiosError;
-      const errorData = error.response?.data as any;
-      toast.error(String(errorData.error));
+      const error = err as AxiosError<ResetValidationError>;
+      if (error?.response?.status === 406) {
+        setError(error.response.data.field, {
+          message: error.response.data.error,
+        });
+        return toast.error(error.response.data.error);
+      }
     }
   };
-  const [isVisible, setIsVisible] = useState(false);
   const handleVisible = () => {
     setIsVisible(!isVisible);
   };
+  const handleVisibleConfirm = () => {
+    setIsVisibleConfirm(!isVisibleConfirm);
+  };
+  if (!token) return <Navigate to={"/"} />;
   return (
     <Box
       component={"div"}
@@ -79,8 +89,13 @@ const Reset = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "#D1D5DB",
+        flexDirection: "column",
       }}
     >
+      <Typography variant="h2" component="h1" marginBottom={5}>
+        Reset your password
+      </Typography>
       <Card>
         <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
@@ -104,8 +119,8 @@ const Reset = () => {
             helperText={errors.confirmPassword?.message}
             InputProps={{
               endAdornment: (
-                <IconButton onClick={handleVisible}>
-                  {isVisible ? <Visibility /> : <VisibilityOff />}
+                <IconButton onClick={handleVisibleConfirm}>
+                  {isVisibleConfirm ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               ),
             }}
@@ -122,7 +137,6 @@ const Reset = () => {
           </Button>
         </CardActions>
       </Card>
-      <Toaster richColors />
     </Box>
   );
 };

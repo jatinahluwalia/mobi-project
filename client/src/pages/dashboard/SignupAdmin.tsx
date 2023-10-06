@@ -22,6 +22,7 @@ import { z } from "zod";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -144,9 +145,11 @@ const SignupAdmin = () => {
       }
     });
   }, [deleteChecked]);
+
   const onSubmit = async (data: Schema) => {
     try {
       await axios.post("/api/user/signup-admin", { ...data, permissions });
+      toast.success("Admin added successfully");
       navigate("/login");
     } catch (error) {
       const axiosError = error as AxiosError<SignupValidationError>;
@@ -159,6 +162,7 @@ const SignupAdmin = () => {
       }
     }
   };
+
   return (
     <Stack padding={5} className="w-full items-start">
       <Typography variant="h2" marginBottom={5}>

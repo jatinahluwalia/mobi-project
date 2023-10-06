@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -23,22 +23,26 @@ const Products = () => {
   const [pageNum, setPageNum] = useState(1);
   const [products, setProducts] = useState<PaginatedProducts | null>(null);
   const [user, setUser] = useState<User>({} as User);
-  const getData = async () => {
+
+  const getData = useCallback(async () => {
     const res = await axios.get("/api/product/?page=" + pageNum);
     const data = res.data;
     setProducts(data.products);
-  };
+  }, [pageNum]);
+
   const getUser = async () => {
     const res = await axios.get("/api/user");
     const data = res.data;
     setUser(data);
   };
+
   useEffect(() => {
     getUser();
   }, []);
+
   useEffect(() => {
     getData();
-  }, [pageNum]);
+  }, [getData]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -91,7 +95,11 @@ const Products = () => {
                 <TableCell align="left">{product.price}</TableCell>
                 <TableCell align="left">
                   <Stack direction={"row"} gap={2}>
-                    <IconButton>
+                    <IconButton
+                      onClick={() =>
+                        navigate("/dashboard/products/" + product._id)
+                      }
+                    >
                       <Visibility />
                     </IconButton>
 

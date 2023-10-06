@@ -11,7 +11,6 @@ import {
   signup,
   signupAdmin,
   updateOtherUser,
-  updatePermissions,
   updateSelf,
 } from "../controllers/user.controller";
 import { checkAuth } from "../middlewares/auth";
@@ -209,12 +208,6 @@ userRouter.post("/reset", verifyForgetToken, resetPass);
  *        description: Some error occurred
  */
 userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
-userRouter.put(
-  "/update-permissions/:_id",
-  checkAuth,
-  isSuperAdmin,
-  updatePermissions
-);
 userRouter.get("/:_id", checkAuth, isSuperAdmin, showOne);
 
 /**

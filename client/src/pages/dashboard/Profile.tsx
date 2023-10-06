@@ -18,7 +18,7 @@ const Profile = () => {
       setUser(data);
     };
     getUser();
-  });
+  }, []);
   const handleDelete = () => {
     try {
       const sure = confirm("Sure you want to delete your account?");
@@ -27,7 +27,9 @@ const Profile = () => {
         auth.dispatch({ type: "LOGOUT", payload: null });
         navigate("/login");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <motion.div {...routingVariants} className="p-5">
@@ -63,9 +65,11 @@ const Profile = () => {
             >
               Edit
             </Button>
-            <Button endIcon={<Delete />} onClick={handleDelete}>
-              Delete
-            </Button>
+            {user?.role !== "superadmin" && (
+              <Button endIcon={<Delete />} onClick={handleDelete}>
+                Delete
+              </Button>
+            )}
           </ButtonGroup>
         </Box>
       </Box>

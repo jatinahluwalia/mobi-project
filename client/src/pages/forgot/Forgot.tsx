@@ -5,11 +5,12 @@ import {
   CardActions,
   CardContent,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios, { AxiosError } from "axios";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const Forgot = () => {
@@ -26,6 +27,7 @@ const Forgot = () => {
     register,
     formState: { errors },
     handleSubmit,
+    setError,
   } = useForm<Values>({
     defaultValues: {
       email: "",
@@ -38,9 +40,13 @@ const Forgot = () => {
       await axios.post("/api/user/forgot-pass", values);
       toast.success("Mail sent successfully");
     } catch (err) {
-      const error = err as AxiosError;
-      const errorData = error.response?.data as any;
-      toast.error(String(errorData.error));
+      const error = err as AxiosError<ForgotValidationError>;
+      if (error?.response?.status === 406) {
+        setError(error.response.data.field, {
+          message: error.response.data.error,
+        });
+        return toast.error(error.response.data.error);
+      }
     }
   };
   return (
@@ -52,8 +58,13 @@ const Forgot = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        flexDirection: "column",
+        backgroundColor: "#D1D5DB",
       }}
     >
+      <Typography variant="h2" component="h1" marginBottom={5}>
+        Forgot Password?
+      </Typography>
       <Card>
         <CardContent>
           <TextField
@@ -73,7 +84,6 @@ const Forgot = () => {
           </Button>
         </CardActions>
       </Card>
-      <Toaster richColors />
     </Box>
   );
 };

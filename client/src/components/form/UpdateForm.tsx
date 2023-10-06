@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -84,6 +84,7 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
         helperText={errors.phone?.message}
         variant="standard"
         label="Phone number"
+        InputProps={{ startAdornment: <Typography>+91</Typography> }}
       />
       <TextField
         {...register("email")}

@@ -17,54 +17,60 @@ import AddProduct from "./pages/dashboard/AddProduct";
 import SignupAdmin from "./pages/dashboard/SignupAdmin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Users from "./pages/dashboard/Users";
-import UserPermissions from "./pages/dashboard/UserPermissions";
+import UserPermissions from "./pages/dashboard/UserUpdate";
 import Profile from "./pages/dashboard/Profile";
 import User from "./pages/dashboard/User";
 import Forgot from "./pages/forgot/Forgot";
 import Reset from "./pages/forgot/Reset";
+import { Toaster } from "sonner";
+import Product from "./pages/dashboard/Product";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
   const auth = useAuth();
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          auth?.user ? (
-            <Navigate to={"/dashboard"} />
-          ) : (
-            <Navigate to={"/login"} />
-          )
-        }
-      />
-      <Route
-        path="/login"
-        element={!auth?.user ? <Login /> : <Navigate to={"/dashboard"} />}
-      />
-      <Route
-        path="/signup"
-        element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
-      />
-      <Route path="/forgot" element={<Forgot />} />
-      <Route path="/reset" element={<Reset />} />
+    <>
+      <Toaster richColors position="top-center" />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            auth?.user ? (
+              <Navigate to={"/dashboard"} />
+            ) : (
+              <Navigate to={"/login"} />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={!auth?.user ? <Login /> : <Navigate to={"/dashboard"} />}
+        />
+        <Route
+          path="/signup"
+          element={!auth?.user ? <Signup /> : <Navigate to={"/dashboard"} />}
+        />
+        <Route path="/forgot" element={<Forgot />} />
+        <Route path="/reset" element={<Reset />} />
 
-      {auth.user && (
-        <Route path="/dashboard" element={<DashBoardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="update-self" element={<UpdateSelf />} />
-          <Route path="products" element={<Products />} />
-          <Route path="users" element={<Users />} />
-          <Route path="products/update/:_id" element={<UpdateProduct />} />
-          <Route path="products/add" element={<AddProduct />} />
-          <Route path="signup-admin" element={<SignupAdmin />} />
-          <Route path="users/permissions/:id" element={<UserPermissions />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="profile/:_id" element={<User />} />
-        </Route>
-      )}
-    </Routes>
+        {auth.user && (
+          <Route path="/dashboard" element={<DashBoardLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="update-self" element={<UpdateSelf />} />
+            <Route path="products" element={<Products />} />
+            <Route path="users" element={<Users />} />
+            <Route path="products/update/:_id" element={<UpdateProduct />} />
+            <Route path="products/add" element={<AddProduct />} />
+            <Route path="signup-admin" element={<SignupAdmin />} />
+            <Route path="users/update/:id" element={<UserPermissions />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile/:_id" element={<User />} />
+            <Route path="products/:_id" element={<Product />} />
+          </Route>
+        )}
+      </Routes>
+    </>
   );
 }
 

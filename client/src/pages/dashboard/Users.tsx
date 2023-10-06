@@ -1,8 +1,13 @@
 import axios from "axios";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Pagination,
   Paper,
@@ -18,33 +23,54 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
-import { Add, Edit, Visibility } from "@mui/icons-material";
+import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
+import { toast } from "sonner";
 
 const Users = () => {
   const [pageNum, setPageNum] = useState(1);
   const navigate = useNavigate();
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [user, setUser] = useState<User>({} as User);
-  const getData = async () => {
+  const [open, setOpen] = useState(false);
+
+  const getData = useCallback(async () => {
     const res = await axios.get("/api/user/all/?page=" + pageNum);
     const data = res.data;
     setUsers(data.users);
-  };
+  }, [pageNum]);
+
   const getUser = async () => {
     const res = await axios.get("/api/user");
     const data = res.data;
     setUser(data);
   };
+
   useEffect(() => {
     getUser();
   }, []);
 
   useEffect(() => {
     getData();
-  }, [pageNum]);
+  }, [getData]);
 
   const handlePageChange = (_e: ChangeEvent<unknown>, pageNumber: number) => {
     setPageNum(pageNumber);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDelete = async (_id: string) => {
+    try {
+      await axios.delete("/api/user/" + _id);
+      setOpen(false);
+      toast.success("Deleted user successfully");
+      getData();
+    } catch (error) {
+      console.log(error);
+      toast.error("Some Error occured");
+    }
   };
   if (user?.role !== "superadmin")
     return (
@@ -106,17 +132,46 @@ const Users = () => {
                           </IconButton>
                         </Tooltip>
 
-                        <Tooltip title="Edit Permissions">
+                        <Tooltip title="Edit User">
                           <IconButton
                             onClick={() =>
                               navigate(
-                                "/dashboard/users/permissions/" + userByID._id
+                                "/dashboard/users/update/" + userByID._id
                               )
                             }
                           >
                             <Edit />
                           </IconButton>
                         </Tooltip>
+                        <Tooltip title="Delete User">
+                          <IconButton onClick={() => setOpen(true)}>
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                        <Dialog
+                          open={open}
+                          onClose={handleClose}
+                          aria-labelledby="alert-dialog-title"
+                          aria-describedby="alert-dialog-description"
+                        >
+                          <DialogTitle id="alert-dialog-title">
+                            Delete Account
+                          </DialogTitle>
+                          <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                              Are you sure you want to delete this account?
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={handleClose}>NO</Button>
+                            <Button
+                              onClick={() => handleDelete(userByID._id)}
+                              autoFocus
+                            >
+                              YES
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </Stack>
                     </TableCell>
                   </TableRow>
