@@ -37,9 +37,14 @@ const DashBoardLayout = () => {
   };
   useEffect(() => {
     const getUser = async () => {
-      const res = await axios.get<User>("/api/user");
-      const data = res.data;
-      setUser(data);
+      try {
+        const res = await axios.get<User>("/api/user");
+        const data = res.data;
+        setUser(data);
+      } catch (error) {
+        auth.dispatch({ type: "LOGOUT", payload: null });
+        navigate("/login");
+      }
     };
     getUser();
   }, []);
