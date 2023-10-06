@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { KeyboardEventHandler, useState } from "react";
 import { blockInvalidChar } from "../../utils/phone";
 
 const nameRegex = /^[A-Za-z ]+$/;
