@@ -90,10 +90,15 @@ const DashBoardLayout = () => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="h3" className="text-black">
+                <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
+                <Typography
+                  variant="body1"
+                  className="text-black"
+                  marginTop={2}
+                >
                   {user.fullName}
                 </Typography>
-                <Typography color={"text.secondary"}>
+                <Typography color={"text.secondary"} variant="body2">
                   {user.role === "superadmin" && "Super Admin"}
                   {user.role === "admin" && "Admin"}
                   {user.role === "user" && "User"}

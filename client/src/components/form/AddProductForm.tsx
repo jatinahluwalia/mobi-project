@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, TextareaAutosize } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -55,13 +55,17 @@ const AddProductForm = () => {
         variant="standard"
         label="Name"
       />
-      <TextField
-        {...register("detail")}
-        error={!!errors.detail}
-        helperText={errors.detail?.message}
-        variant="standard"
-        label="Detail"
-      />
+      <div className="border border-gray-400 rounded-md overflow-hidden p-2">
+        <textarea
+          {...register("detail")}
+          id="detail-area"
+          className={`min-w-[500px] focus:outline-none ${
+            errors.detail ? "placeholder:text-red-600" : ""
+          }`}
+          placeholder="Detail"
+        />
+      </div>
+      {errors.detail && <p className="text-red-600">{errors.detail.message}</p>}
       <TextField
         {...register("price", { valueAsNumber: true })}
         error={!!errors.price}
