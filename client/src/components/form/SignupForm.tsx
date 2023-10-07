@@ -58,9 +58,7 @@ const SignupForm = ({ url }: Props) => {
   });
 
   const onSubmit = async (data: Schema) => {
-    const promise = axios.post(url, data).then(() => {
-      navigate("/login");
-    });
+    const promise = axios.post(url, data);
     toast.promise(promise, {
       loading: "Signing up",
       error: (error) => {
@@ -74,7 +72,10 @@ const SignupForm = ({ url }: Props) => {
         }
         return axiosError.response?.data.error;
       },
-      success: "Signed up",
+      success: () => {
+        navigate("/login");
+        return "Signed up";
+      },
     });
   };
 

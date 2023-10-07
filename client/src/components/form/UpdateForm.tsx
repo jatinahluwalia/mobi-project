@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -52,12 +52,13 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
   });
 
   const onSubmit = (data: Schema) => {
-    const promise = axios.put(url, data).then(() => {
-      navigate("/dashboard");
-    });
+    const promise = axios.put(url, data).then(() => {});
     toast.promise(promise, {
       loading: "Updating User",
-      success: "User Updated",
+      success: () => {
+        navigate("/dashboard");
+        return "User updated";
+      },
       error(error) {
         const axiosError = error as AxiosError<UpdateValidationError>;
         if (axiosError.response?.status === 406) {
@@ -70,16 +71,15 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
     });
   };
   return (
-    <Box
-      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
-      component={"form"}
+    <form
+      className="bg-white w-[min(600px,100%)] flex flex-col gap-5"
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
         {...register("fullName")}
         error={!!errors.fullName}
         helperText={errors.fullName?.message}
-        variant="standard"
+        variant="outlined"
         label="Full Name"
       />
       <TextField
@@ -88,7 +88,7 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
         type="number"
         error={!!errors.phone}
         helperText={errors.phone?.message}
-        variant="standard"
+        variant="outlined"
         label="Phone number"
         InputProps={{ startAdornment: <Typography>+91</Typography> }}
       />
@@ -96,13 +96,13 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
         {...register("email")}
         error={!!errors.email}
         helperText={errors.email?.message}
-        variant="standard"
+        variant="outlined"
         label="Email"
       />
       <Button variant="contained" type="submit">
         Update
       </Button>
-    </Box>
+    </form>
   );
 };
 

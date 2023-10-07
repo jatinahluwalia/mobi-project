@@ -169,14 +169,14 @@ const SignupAdmin = () => {
         Add Admin
       </Typography>
       <form
-        className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+        className="bg-white w-[min(800px,100%)] grid grid-cols-2 gap-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <TextField
           {...register("fullName")}
           error={!!errors.fullName}
           helperText={errors.fullName?.message}
-          variant="standard"
+          variant="outlined"
           label="Full Name"
         />
         <TextField
@@ -185,7 +185,7 @@ const SignupAdmin = () => {
           type="number"
           error={!!errors.phone}
           helperText={errors.phone?.message}
-          variant="standard"
+          variant="outlined"
           label="Phone number"
           InputProps={{ startAdornment: "+91" }}
         />
@@ -193,24 +193,24 @@ const SignupAdmin = () => {
           {...register("email")}
           error={!!errors.email}
           helperText={errors.email?.message}
-          variant="standard"
+          variant="outlined"
           label="Email"
         />
         <TextField
           {...register("password")}
           error={!!errors.password}
           helperText={errors.password?.message}
-          variant="standard"
+          variant="outlined"
           label="Password"
           type={isVisible ? "text" : "password"}
           InputProps={{
             endAdornment: isVisible ? (
               <IconButton onClick={() => setIsVisible(!isVisible)}>
-                <VisibilityIcon sx={{ width: "16px", height: "16px" }} />
+                <VisibilityIcon />
               </IconButton>
             ) : (
               <IconButton onClick={() => setIsVisible(!isVisible)}>
-                <VisibilityOffIcon sx={{ width: "16px", height: "16px" }} />
+                <VisibilityOffIcon />
               </IconButton>
             ),
           }}

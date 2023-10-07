@@ -12,14 +12,15 @@ const AddProductForm = () => {
   const schema = z.object({
     name: z
       .string()
-      .nonempty("Name cannot be empty")
-      .max(50, "Cant be larger than 50 characters")
-      .regex(/^[A-Za-z ]/g, "Name can only contain letters"),
-    detail: z.string().nonempty("Detail cannot be empty"),
-    price: z.number({
-      invalid_type_error: "Enter a valid price",
-    }),
-    hero: z.string().nonempty("Hero cannot be empty"),
+      .min(1, "Name cannot be empty")
+      .max(50, "Cant be larger than 50 characters"),
+    detail: z.string().min(1, "Detail cannot be empty"),
+    price: z
+      .number({
+        invalid_type_error: "Enter a valid price",
+      })
+      .max(100000000, "Please enter a realistic price"),
+    hero: z.string().min(1, "Hero cannot be empty"),
   });
   type Schema = z.infer<typeof schema>;
   const {
@@ -36,14 +37,15 @@ const AddProductForm = () => {
   });
 
   const onSubmit = (data: Schema) => {
-    const promise = axios.post(`/api/product/`, data).then(() => {
-      navigate("/dashboard/products");
-    });
+    const promise = axios.post(`/api/product/`, data);
     toast.promise(promise, {
       loading: "Adding Product...",
-      success: "Product added",
+      success: () => {
+        navigate("/dashboard/products");
+        return "Product added.";
+      },
       error: (error) => {
-        const axiosError = error as AxiosError<any>;
+        const axiosError = error as AxiosError<{ error: string | null }>;
         return axiosError.response?.data.error || "Error adding product";
       },
     });

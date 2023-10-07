@@ -27,19 +27,21 @@ const Forgot = () => {
     resolver: zodResolver(schema),
     mode: "all",
   });
-  const onSubmit = async (values: Values) => {
-    try {
-      await axios.post("/api/user/forgot-pass", values);
-      toast.success("Mail sent successfully");
-    } catch (err) {
-      const error = err as AxiosError<ForgotValidationError>;
-      if (error?.response?.status === 406) {
-        setError(error.response.data.field, {
-          message: error.response.data.error,
-        });
-        return toast.error(error.response.data.error);
-      }
-    }
+  const onSubmit = (values: Values) => {
+    const promise = axios.post("/api/user/forgot-pass", values);
+    toast.promise(promise, {
+      success: "Mail sent successfully.",
+      loading: "Sending mail...",
+      error: (error) => {
+        const err = error as AxiosError<ForgotValidationError>;
+        if (err?.response?.status === 406) {
+          setError(err.response.data.field, {
+            message: err.response.data.error,
+          });
+          return err.response.data.error || "Some error occurred.";
+        }
+      },
+    });
   };
   return (
     <div className="min-h-[100dvh] grid place-content-center">

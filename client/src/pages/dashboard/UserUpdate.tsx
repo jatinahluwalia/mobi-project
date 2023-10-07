@@ -2,7 +2,6 @@ import axios, { AxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box,
   Button,
   Checkbox,
   LinearProgress,
@@ -74,11 +73,12 @@ const UserUpdate = () => {
   const handleSave = (values: Schema) => {
     const promise = axios
       .put(`/api/user/${id}`, { ...values, permissions })
-      .then(() => {
-        navigate("/dashboard/users");
-      });
+      .then(() => {});
     toast.promise(promise, {
-      success: "User Updated",
+      success: () => {
+        navigate("/dashboard/users");
+        return "User updated";
+      },
       loading: "Updating User",
       error(error) {
         const axiosError = error as AxiosError<UpdateValidationError>;
@@ -214,19 +214,18 @@ const UserUpdate = () => {
       <Typography variant="h2" marginY={5}>
         Update User
       </Typography>
-      <Typography variant="h4" marginBottom={5}>
+      {/* <Typography variant="h4" marginBottom={5}>
         {userByID?.fullName}
-      </Typography>
-      <Box
-        className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5 w-max mb-5"
-        component={"form"}
+      </Typography> */}
+      <form
+        className="bg-white w-[min(600px,100%)] flex flex-col gap-5 mb-5"
         onSubmit={handleSubmit(handleSave)}
       >
         <TextField
           {...register("fullName")}
           error={!!errors.fullName}
           helperText={errors.fullName?.message}
-          variant="standard"
+          variant="outlined"
           label="Full Name"
         />
         <TextField
@@ -235,7 +234,7 @@ const UserUpdate = () => {
           type="number"
           error={!!errors.phone}
           helperText={errors.phone?.message}
-          variant="standard"
+          variant="outlined"
           label="Phone number"
           InputProps={{ startAdornment: <Typography>+91</Typography> }}
         />
@@ -243,10 +242,10 @@ const UserUpdate = () => {
           {...register("email")}
           error={!!errors.email}
           helperText={errors.email?.message}
-          variant="standard"
+          variant="outlined"
           label="Email"
         />
-      </Box>
+      </form>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

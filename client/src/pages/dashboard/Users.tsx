@@ -1,7 +1,8 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Avatar,
   Button,
   Dialog,
   DialogActions,
@@ -71,28 +72,39 @@ const Users = () => {
     setOpen(false);
   };
 
-  const handleDelete = async (_id: string) => {
-    try {
-      await axios.delete("/api/user/" + _id);
-      setOpen(false);
-      toast.success("Deleted user successfully");
-      getData();
-    } catch (error) {
-      console.log(error);
-      toast.error("Some Error occured");
-    }
+  const handleDelete = (_id: string) => {
+    const promise = axios.delete("/api/user/" + _id);
+    toast.promise(promise, {
+      success: () => {
+        setOpen(false);
+        getData();
+        return "User deleted successfully.";
+      },
+      error: (error) => {
+        const axiosError = error as AxiosError<{ error: string | null }>;
+        return axiosError.response?.data.error || "Error deleting user.";
+      },
+      loading: "Deleting user...",
+    });
   };
 
-  const handleMakeAdmin = async (_id: string) => {
-    try {
-      await axios.put("/api/user/to-admin", { _id });
-      setOpenRole(false);
-      toast.success("Role changed successfully");
-      getData();
-    } catch (error) {
-      toast.error("Error occured");
-    }
+  const handleMakeAdmin = (_id: string) => {
+    const promise = axios.put("/api/user/to-admin", { _id });
+    toast.promise(promise, {
+      success: () => {
+        setOpenRole(false);
+        getData();
+        return "Role changed successfully";
+      },
+      loading: "Changing role...",
+      error: () => {
+        setOpenRole(false);
+        return "Error changing role.";
+      },
+    });
   };
+
+  const colors = ["!bg-orange-500", "!bg-purple-500", "!bg-blue-500"];
 
   if (loading)
     return (
@@ -142,7 +154,16 @@ const Users = () => {
                     key={`${userByID.fullName}-${index}`}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell align="left">{userByID.fullName}</TableCell>
+                    <TableCell align="left">
+                      <div className="flex items-center gap-5">
+                        <Avatar
+                          className={colors[Math.floor(Math.random() * 3)]}
+                        >
+                          {userByID.fullName[0]}
+                        </Avatar>
+                        <Typography>{userByID.fullName}</Typography>
+                      </div>
+                    </TableCell>
                     <TableCell align="left">{userByID.email}</TableCell>
                     <TableCell align="left">
                       {userByID.role === "superadmin" && "Super Admin"}

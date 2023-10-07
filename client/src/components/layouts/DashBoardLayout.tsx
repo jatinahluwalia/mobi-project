@@ -32,8 +32,6 @@ const DashBoardLayout = () => {
   const [anchor, setAnchor] = useState<null | HTMLButtonElement>(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const [key, setKey] = useState("");
-
   const [user, setUser] = useState<User | null>(null);
   const auth = useAuth();
 
@@ -58,38 +56,45 @@ const DashBoardLayout = () => {
       }
     };
     getUser();
-  }, []);
+  }, [auth, navigate]);
+
   const handleDelete = () => {
-    const promise = axios.delete("/api/user").then(() => {
-      auth.dispatch({
-        type: "LOGOUT",
-        payload: null,
-      });
-      navigate("/login");
-    });
+    const promise = axios.delete("/api/user");
     toast.promise(promise, {
       loading: "Deleting Account",
-      success: "Account Deleted",
+      success: () => {
+        auth.dispatch({
+          type: "LOGOUT",
+          payload: null,
+        });
+        navigate("/login");
+        return "Account deleted";
+      },
       error: "Error deleting account",
     });
   };
+
   const handleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchor(e.currentTarget);
   };
+
   const handleClose = () => {
     setAnchor(null);
   };
+
   const open = Boolean(anchor);
+
   if (loading)
     return (
       <div className="fixed top-0 left-0 w-full">
         <LinearProgress />
       </div>
     );
+
   return (
     <div className="h-screen flex flex-col">
       {user && (
-        <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200 px-5">
+        <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200  bg-[#f6f6f6] px-5">
           <IconButton onClick={() => navigate("/dashboard")}>
             <Avatar src="/mobi.png"></Avatar>
           </IconButton>
@@ -191,7 +196,7 @@ const DashBoardLayout = () => {
         </div>
       )}
       <section className="grid grid-cols-[300px_1fr] grow">
-        <aside className="flex flex-col divide-y-[1px] divide-gray-800 border-r border-gray-200">
+        <aside className="flex flex-col divide-y-[1px] divide-gray-800 border-r border-gray-200 bg-[#f6f6f6]">
           <List>
             <ListItem disablePadding>
               <ListItemButton onClick={() => navigate("/dashboard")}>

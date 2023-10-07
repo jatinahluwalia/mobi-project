@@ -57,21 +57,25 @@ const Reset = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleConfirm, setIsVisibleConfirm] = useState(false);
   const onSubmit = async (values: Values) => {
-    try {
-      await axios.post("/api/user/reset", values, { headers: { token } });
-      toast.success("Password Reset Successfully");
-      setTimeout(() => {
+    const promise = axios.post("/api/user/reset", values, {
+      headers: { token },
+    });
+    toast.promise(promise, {
+      loading: "Resetting password",
+      success: () => {
         navigate("/login");
-      }, 2000);
-    } catch (err) {
-      const error = err as AxiosError<ResetValidationError>;
-      if (error?.response?.status === 406) {
-        setError(error.response.data.field, {
-          message: error.response.data.error,
-        });
-        return toast.error(error.response.data.error);
-      }
-    }
+        return "Password reset successfully";
+      },
+      error: (err) => {
+        const error = err as AxiosError<ResetValidationError>;
+        if (error?.response?.status === 406) {
+          setError(error.response.data.field, {
+            message: error.response.data.error,
+          });
+          return toast.error(error.response.data.error);
+        }
+      },
+    });
   };
   const handleVisible = () => {
     setIsVisible(!isVisible);

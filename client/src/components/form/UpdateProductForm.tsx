@@ -49,15 +49,14 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
   };
   return (
     <Box
-      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5 w-[min(500px,100%)]"
-      component={"form"}
+      className="bg-white flex flex-col gap-5 w-[min(600px,100%)]"
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
         {...register("name")}
         error={!!errors.name}
         helperText={errors.name?.message}
-        variant="standard"
+        variant="outlined"
         label="Name"
       />
       <TextareaAutosize
@@ -77,7 +76,7 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
         type="number"
         error={!!errors.price}
         helperText={errors.price?.message}
-        variant="standard"
+        variant="outlined"
         label="Price"
         InputProps={{ startAdornment: <CurrencyRupee /> }}
       />

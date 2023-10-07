@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -55,15 +55,21 @@ const Products = () => {
     getData();
   }, [getData]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await axios.delete(`/api/product/${id}`);
-      setOpen(false);
-      toast.success("Product deleted successfully");
-      getData();
-    } catch (error) {
-      toast.error("Error deleting product");
-    }
+  const handleDelete = (id: string) => {
+    const promise = axios.delete(`/api/product/${id}`);
+    toast.promise(promise, {
+      loading: "Deleting product",
+      success: () => {
+        setOpen(false);
+        getData();
+        return "Product deleted";
+      },
+      error: (error) => {
+        setOpen(false);
+        const axiosError = error as AxiosError<{ error: string | null }>;
+        return axiosError.response?.data.error || "Error deleting product";
+      },
+    });
   };
 
   const handleClose = () => {
