@@ -16,12 +16,15 @@ import {
   ListItemButton,
   ListItemText,
   Popover,
+  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Logout } from "@mui/icons-material";
+import { ArrowLeft, Logout } from "@mui/icons-material";
+import { useLocation } from "react-router-dom";
 
 const DashBoardLayout = () => {
+  const location = useLocation();
   const [anchor, setAnchor] = useState<null | HTMLButtonElement>(null);
   // const [key, setKey] = useState("");
 
@@ -75,9 +78,20 @@ const DashBoardLayout = () => {
     <div className="h-screen flex flex-col">
       {user && (
         <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200 px-5">
-          <IconButton onClick={() => navigate("/dashboard")}>
-            <Avatar src="/mobi.png"></Avatar>
-          </IconButton>
+          <Stack direction={"row"} alignItems={"center"}>
+            <IconButton onClick={() => navigate("/dashboard")}>
+              <Avatar src="/mobi.png"></Avatar>
+            </IconButton>
+            {location.pathname !== "/dashboard" && (
+              <Button
+                variant="outlined"
+                endIcon={<ArrowLeft />}
+                onClick={() => navigate(-1)}
+              >
+                Go Back
+              </Button>
+            )}
+          </Stack>
           <IconButton onClick={handleOpen}>
             <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
           </IconButton>

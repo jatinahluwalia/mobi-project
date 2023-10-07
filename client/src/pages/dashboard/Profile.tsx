@@ -58,19 +58,28 @@ const Profile = () => {
           <Typography variant="body1">{user?.phone}</Typography>
         </Stack>
         <Box marginTop={3}>
-          <ButtonGroup variant="outlined" aria-label="outlined button group">
-            <Button
-              endIcon={<Edit />}
-              onClick={() => navigate("/dashboard/update-self")}
-            >
-              Edit
-            </Button>
-            {user?.role !== "superadmin" && (
+          {user?.role !== "superadmin" ? (
+            <ButtonGroup variant="outlined" aria-label="outlined button group">
+              <Button
+                endIcon={<Edit />}
+                onClick={() => navigate("/dashboard/update-self")}
+              >
+                Edit
+              </Button>
+
               <Button endIcon={<Delete />} onClick={handleDelete}>
                 Delete
               </Button>
-            )}
-          </ButtonGroup>
+            </ButtonGroup>
+          ) : (
+            <Button
+              endIcon={<Edit />}
+              onClick={() => navigate("/dashboard/update-self")}
+              variant="outlined"
+            >
+              Edit
+            </Button>
+          )}
         </Box>
       </Box>
     </motion.div>

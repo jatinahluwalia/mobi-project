@@ -3,6 +3,11 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Pagination,
   Paper,
@@ -18,7 +23,10 @@ import {
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
 import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
+import { toast } from "sonner";
 const Products = () => {
+  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(1);
   const [products, setProducts] = useState<PaginatedProducts | null>(null);
@@ -46,14 +54,17 @@ const Products = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const sure = confirm("Sure you want to delete this product?");
-      if (sure) {
-        await axios.delete(`/api/product/${id}`);
-        getData();
-      }
+      await axios.delete(`/api/product/${id}`);
+      setOpen(false);
+      toast.success("Product deleted successfully");
+      getData();
     } catch (error) {
-      console.log(error);
+      toast.error("Error deleting product");
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handlePageChange = (_e: ChangeEvent<unknown>, pageNumber: number) => {
@@ -87,7 +98,7 @@ const Products = () => {
           <TableBody>
             {products?.docs.map((product, index) => (
               <TableRow
-                key={`${product.name}-${index}`}
+                key={`${product.name}-${index}-${product.price}`}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">{product.name}</TableCell>
@@ -113,10 +124,34 @@ const Products = () => {
                       </IconButton>
                     )}
                     {user?.permissions?.includes("product-delete") && (
-                      <IconButton onClick={() => handleDelete(product._id)}>
+                      <IconButton onClick={() => setOpen(true)}>
                         <Delete />
                       </IconButton>
                     )}
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        Delete Product
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Are you sure you want to delete this Product?
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose}>NO</Button>
+                        <Button
+                          onClick={() => handleDelete(product._id)}
+                          autoFocus
+                        >
+                          YES
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
                   </Stack>
                 </TableCell>
               </TableRow>
