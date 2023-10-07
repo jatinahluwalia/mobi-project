@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Checkbox,
+  LinearProgress,
   Paper,
   Stack,
   Table,
@@ -36,6 +37,7 @@ const UserUpdate = () => {
   const [addChecked, setAddChecked] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
   const [permissions, setPermissions] = useState([] as string[]);
+  const [loading, setLoading] = useState(true);
 
   const schema = z.object({
     email: z
@@ -101,6 +103,7 @@ const UserUpdate = () => {
     const res = await axios.get("/api/user/");
     const data = res.data;
     setUser(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -179,9 +182,14 @@ const UserUpdate = () => {
     getUser();
   }, []);
 
-  console.log({ permissions });
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
 
-  if (user?.role !== "superadmin")
+  if (user && user.role !== "superadmin")
     return (
       <motion.section {...routingVariants} className="p-5 grow">
         <Typography variant="h2" marginY={5}>
