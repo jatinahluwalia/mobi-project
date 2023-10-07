@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
@@ -21,20 +21,23 @@ const User = () => {
   const { _id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [authUser, setAuthUser] = useState<User | null>(null);
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     const res = await axios.get("/api/user/" + _id);
     const data = res.data;
     setUser(data.user);
-  };
+  }, [_id]);
   const getAuthUser = async () => {
     const res = await axios.get("/api/user/");
     const data = res.data;
     setAuthUser(data);
   };
   useEffect(() => {
-    getUser();
     getAuthUser();
   }, []);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
   if (authUser?.role !== "superadmin")
     return (
       <Typography variant="h3" padding={5}>
