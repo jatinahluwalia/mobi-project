@@ -224,6 +224,10 @@ export const forgotPass = async (req: Request, res: Response) => {
     const user = await User.findOneAndUpdate({ email }, { forgot: true });
     if (!user)
       return res.status(406).json({ error: "User not found", field: "email" });
+    if (req.headers.origin !== String(process.env.BASE_URL))
+      return res
+        .status(400)
+        .json({ error: "Please use the website to generate link" });
     const token = jwt.sign({ email }, String(process.env.JWT_SECRET));
     transporter.sendMail({
       to: email,
@@ -244,6 +248,10 @@ export const resetPass = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
     if (!user?.forgot)
       return res.status(406).json({ error: "Please generate link again" });
+    if (req.headers.origin !== String(process.env.BASE_URL))
+      return res
+        .status(400)
+        .json({ error: "Please use the website to reset password." });
     const { password, confirmPassword } = req.body;
     if (password !== confirmPassword)
       return res
@@ -255,12 +263,10 @@ export const resetPass = async (req: Request, res: Response) => {
         .json({ error: "Please enter a strong password", field: "password" });
     const sameAsOld = await bcrypt.compare(password, user?.hashedPassword);
     if (sameAsOld)
-      return res
-        .status(406)
-        .json({
-          error: "Please cannot be the previous one",
-          field: "password",
-        });
+      return res.status(406).json({
+        error: "Please cannot be the previous one",
+        field: "password",
+      });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     user.hashedPassword = hashedPassword;
