@@ -1,7 +1,7 @@
 import {
-  Box,
   Button,
   IconButton,
+  LinearProgress,
   Link,
   TextField,
   Typography,
@@ -16,9 +16,11 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { toast } from "sonner";
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [loggingIn, setLogginIn] = useState(false);
 
   const auth = useAuth();
   const navigate = useNavigate();
@@ -44,33 +46,39 @@ const Login = () => {
       password: "",
     },
     resolver: zodResolver(schema),
+    mode: "all",
   });
 
-  const onSubmit = async (data: Schema) => {
-    try {
-      const res = await axios.post("/api/user/login", data);
-      const user = res.data as ContextUser;
-      auth?.dispatch({
-        type: "LOGIN",
-        payload: user,
-      });
-
-      navigate("/dashboard");
-    } catch (error) {
-      const axiosError = error as AxiosError<LoginValidationError>;
-      if (axiosError.response && axiosError.response.status === 406) {
-        setError(axiosError.response?.data.field, {
-          message: axiosError.response?.data.error,
+  const onSubmit = (data: Schema) => {
+    setLogginIn(true);
+    axios
+      .post("/api/user/login", data)
+      .then((res) => {
+        setLogginIn(false);
+        const user = res.data as ContextUser;
+        auth?.dispatch({
+          type: "LOGIN",
+          payload: user,
         });
-      } else {
-        console.log(axiosError.response?.data.error);
-      }
-    }
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        setLogginIn(false);
+        const axiosError = error as AxiosError<LoginValidationError>;
+        if (axiosError.response && axiosError.response.status === 406) {
+          setError(axiosError.response?.data.field, {
+            message: axiosError.response?.data.error,
+          });
+        } else {
+          console.log(axiosError.response?.data.error);
+        }
+        toast.error(axiosError.response?.data.error);
+      });
   };
 
   return (
-    <main className="min-h-screen flex flex-col place-content-center bg-gray-300 ">
-      <div className="grow grid grid-cols-2 w-[min(1000px,100%)] mx-auto">
+    <main className="min-h-screen flex flex-col place-content-center bg-white">
+      <div className="grow grid grid-cols-2 w-[min(900px,100%)] mx-auto gap-5">
         <motion.img
           src="/mobi.png"
           initial={{ x: 100 }}
@@ -82,25 +90,24 @@ const Login = () => {
           initial={{ x: -100 }}
           animate={{ x: 0 }}
           transition={{ duration: 1 }}
-          className="m-auto"
+          className="flex items-center justify-center"
         >
-          <Box
-            className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
-            component={"form"}
+          <form
+            className=" bg-white min-w-[300px] flex flex-col gap-5"
             onSubmit={handleSubmit(onSubmit)}
           >
             <TextField
               {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
-              variant="standard"
+              variant="outlined"
               label="Email"
             />
             <TextField
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
-              variant="standard"
+              variant="outlined"
               label="Password"
               type={isVisible ? "text" : "password"}
               InputProps={{
@@ -116,26 +123,35 @@ const Login = () => {
               }}
             />
             <Typography variant="body2">
-              Don't have an account?{" "}
+              Don't have an account?
               <Link
                 onClick={() => navigate("/signup")}
                 className="cursor-pointer"
+                marginLeft={1}
               >
                 Signup
               </Link>
             </Typography>
-            <Link
-              onClick={() => navigate("/forgot")}
-              className="cursor-pointer"
-            >
-              Forgot Password?
-            </Link>
-            <Button variant="contained" type="submit">
+
+            <Button variant="contained" type="submit" disabled={loggingIn}>
               Login
             </Button>
-          </Box>
+            <div className="flex justify-end">
+              <Link
+                onClick={() => navigate("/forgot")}
+                className="cursor-pointer"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+          </form>
         </motion.div>
       </div>
+      {loggingIn && (
+        <div className="fixed top-0 left-0 w-full">
+          <LinearProgress />
+        </div>
+      )}
     </main>
   );
 };

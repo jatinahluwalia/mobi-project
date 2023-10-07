@@ -1,10 +1,4 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  LinearProgress,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, LinearProgress, Typography } from "@mui/material";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -46,9 +40,9 @@ const Dashboard = () => {
 
   return (
     <motion.div {...routingVariants}>
-      <Box sx={{ margin: 5 }}>
-        <Typography variant="h3">Dashboard</Typography>
-        <Box className="flex gap-5 mt-5">
+      <div className="m-5">
+        <Typography variant="h4">Dashboard</Typography>
+        <div className="flex gap-5 mt-5">
           {user?.permissions.includes("product-view") && (
             <Card>
               <CardContent>
@@ -56,8 +50,8 @@ const Dashboard = () => {
                   to={"/dashboard/products"}
                   className="flex flex-col items-center"
                 >
-                  <Typography variant="h4"> Total Products</Typography>
-                  <Typography variant="h5">{productCount}</Typography>
+                  <Typography variant="h5"> Total Products</Typography>
+                  <Typography variant="h6">{productCount}</Typography>
                 </Link>
               </CardContent>
             </Card>
@@ -69,8 +63,8 @@ const Dashboard = () => {
                   to={"/dashboard/users"}
                   className="flex flex-col items-center"
                 >
-                  <Typography variant="h4"> Total Admins</Typography>
-                  <Typography variant="h5">{adminCount}</Typography>
+                  <Typography variant="h5"> Total Admins</Typography>
+                  <Typography variant="h6">{adminCount}</Typography>
                 </Link>
               </CardContent>
             </Card>
@@ -79,13 +73,10 @@ const Dashboard = () => {
           {(user?.role === "superadmin" || user?.role === "admin") && (
             <Card>
               <CardContent>
-                <Link
-                  to={"/dashboard/users"}
-                  className="flex flex-col items-center"
-                >
-                  <Typography variant="h4"> Total Users</Typography>
-                  <Typography variant="h5">{userCount}</Typography>
-                </Link>
+                <div className="flex flex-col items-center">
+                  <Typography variant="h5"> Total Users</Typography>
+                  <Typography variant="h6">{userCount}</Typography>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -96,8 +87,8 @@ const Dashboard = () => {
                 You are not allowed any actions.
               </Typography>
             )}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </motion.div>
   );
 };

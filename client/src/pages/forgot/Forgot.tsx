@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios, { AxiosError } from "axios";
@@ -50,41 +42,23 @@ const Forgot = () => {
     }
   };
   return (
-    <Box
-      component={"div"}
-      sx={{
-        width: "100%",
-        height: "100dvh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        backgroundColor: "#D1D5DB",
-      }}
-    >
-      <Typography variant="h2" component="h1" marginBottom={5}>
-        Forgot Password?
-      </Typography>
-      <Card>
-        <CardContent>
-          <TextField
-            label="Email"
-            {...register("email")}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-        </CardContent>
-        <CardActions>
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleSubmit(onSubmit)}
-          >
-            Send mail
-          </Button>
-        </CardActions>
-      </Card>
-    </Box>
+    <div className="min-h-[100dvh] grid place-content-center">
+      <div className="grid gap-5">
+        <Typography variant="h2" component="h1" marginBottom={5}>
+          Forgot Password?
+        </Typography>
+        <TextField
+          label="Email"
+          {...register("email")}
+          error={!!errors.email}
+          helperText={errors.email?.message}
+          fullWidth
+        />
+        <Button variant="contained" fullWidth onClick={handleSubmit(onSubmit)}>
+          Send mail
+        </Button>
+      </div>
+    </div>
   );
 };
 

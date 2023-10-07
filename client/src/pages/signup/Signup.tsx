@@ -3,20 +3,20 @@ import { motion } from "framer-motion";
 
 const Signup = () => {
   return (
-    <main className="min-h-screen flex flex-col place-content-center bg-gray-300 ">
-      <div className="grow grid grid-cols-2 w-[min(1000px,100%)] mx-auto">
+    <main className="min-h-screen flex flex-col place-content-center bg-white">
+      <div className="grow grid grid-cols-2 w-[min(900px,100%)] mx-auto gap-5">
         <motion.img
           src="/mobi.png"
-          initial={{ x: 100 }}
-          animate={{ x: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           className="m-auto"
         />
         <motion.div
-          initial={{ x: -100 }}
-          animate={{ x: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="m-auto"
+          className="flex items-center justify-center"
         >
           <SignupForm url="/api/user/signup" />
         </motion.div>

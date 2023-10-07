@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, TextField, TextareaAutosize } from "@mui/material";
+import { Button, TextField, TextareaAutosize } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { blockInvalidChar } from "../../utils/phone";
+import { toast } from "sonner";
 const AddProductForm = () => {
   const navigate = useNavigate();
   const schema = z.object({
@@ -34,29 +35,50 @@ const AddProductForm = () => {
     mode: "all",
   });
 
-  const onSubmit = async (data: Schema) => {
-    try {
-      await axios.post(`/api/product/`, data);
+  const onSubmit = (data: Schema) => {
+    const promise = axios.post(`/api/product/`, data).then(() => {
       navigate("/dashboard/products");
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      console.log(axiosError);
-    }
+    });
+    toast.promise(promise, {
+      loading: "Adding Product...",
+      success: "Product added",
+      error: (error) => {
+        const axiosError = error as AxiosError<any>;
+        return axiosError.response?.data.error || "Error adding product";
+      },
+    });
   };
   return (
-    <Box
-      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5 w-[min(500px,100%)]"
-      component={"form"}
+    <form
+      className="grid gap-5 w-[min(500px,100%)]"
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
         {...register("name")}
         error={!!errors.name}
         helperText={errors.name?.message}
-        variant="standard"
+        variant="outlined"
         label="Name"
       />
-
+      <TextField
+        {...register("hero")}
+        error={!!errors.hero}
+        helperText={errors.hero?.message}
+        variant="outlined"
+        label="Hero"
+      />
+      <TextField
+        onKeyDown={blockInvalidChar}
+        {...register("price", { valueAsNumber: true })}
+        type="number"
+        error={!!errors.price}
+        helperText={errors.price?.message}
+        variant="outlined"
+        label="Price"
+        InputProps={{
+          startAdornment: <CurrencyRupee />,
+        }}
+      />
       <TextareaAutosize
         {...register("detail")}
         id="detail-area"
@@ -67,29 +89,15 @@ const AddProductForm = () => {
         minRows={7}
       />
       {errors.detail && <p className="text-red-600">{errors.detail.message}</p>}
-      <TextField
-        onKeyDown={blockInvalidChar}
-        {...register("price", { valueAsNumber: true })}
-        type="number"
-        error={!!errors.price}
-        helperText={errors.price?.message}
-        variant="standard"
-        label="Price"
-        InputProps={{
-          startAdornment: <CurrencyRupee />,
-        }}
-      />
-      <TextField
-        {...register("hero")}
-        error={!!errors.hero}
-        helperText={errors.hero?.message}
-        variant="standard"
-        label="Hero"
-      />
-      <Button variant="contained" type="submit">
+
+      <Button
+        variant="contained"
+        type="submit"
+        sx={{ width: "max-content", ml: "auto" }}
+      >
         Add
       </Button>
-    </Box>
+    </form>
   );
 };
 

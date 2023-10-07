@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { blockInvalidChar } from "../../utils/phone";
+import { toast } from "sonner";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -50,18 +51,23 @@ const UpdateForm = ({ url, email, fullName, phone }: Props) => {
     mode: "all",
   });
 
-  const onSubmit = async (data: Schema) => {
-    try {
-      await axios.put(url, data);
+  const onSubmit = (data: Schema) => {
+    const promise = axios.put(url, data).then(() => {
       navigate("/dashboard");
-    } catch (error) {
-      const axiosError = error as AxiosError<UpdateValidationError>;
-      if (axiosError.response?.status === 422) {
-        setError(axiosError.response.data.field, {
-          message: axiosError.response.data.error,
-        });
-      }
-    }
+    });
+    toast.promise(promise, {
+      loading: "Updating User",
+      success: "User Updated",
+      error(error) {
+        const axiosError = error as AxiosError<UpdateValidationError>;
+        if (axiosError.response?.status === 406) {
+          setError(axiosError.response.data.field, {
+            message: axiosError.response.data.error,
+          });
+        }
+        return axiosError.response?.data.error || "Server Error";
+      },
+    });
   };
   return (
     <Box

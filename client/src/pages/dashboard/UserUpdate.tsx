@@ -71,19 +71,25 @@ const UserUpdate = () => {
     mode: "all",
   });
 
-  const handleSave = async (values: Schema) => {
-    try {
-      await axios.put(`/api/user/${id}`, { ...values, permissions });
-      toast.success("Updated User");
-      navigate("/dashboard/users");
-    } catch (error) {
-      const axiosError = error as AxiosError<UpdateValidationError>;
-      if (axiosError.response?.status === 406) {
-        setError(axiosError.response.data.field, {
-          message: axiosError.response.data.error,
-        });
-      }
-    }
+  const handleSave = (values: Schema) => {
+    const promise = axios
+      .put(`/api/user/${id}`, { ...values, permissions })
+      .then(() => {
+        navigate("/dashboard/users");
+      });
+    toast.promise(promise, {
+      success: "User Updated",
+      loading: "Updating User",
+      error(error) {
+        const axiosError = error as AxiosError<UpdateValidationError>;
+        if (axiosError.response?.status === 406) {
+          setError(axiosError.response.data.field, {
+            message: axiosError.response.data.error,
+          });
+        }
+        return axiosError.response?.data.error || "Server Error";
+      },
+    });
   };
 
   const getData = useCallback(async () => {

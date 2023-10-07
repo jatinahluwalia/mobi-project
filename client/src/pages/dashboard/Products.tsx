@@ -87,7 +87,7 @@ const Products = () => {
     );
   return (
     <motion.section {...routingVariants} className="p-5 grow">
-      <Typography variant="h2" marginY={5}>
+      <Typography variant="h2" marginBottom={5}>
         Products Management
       </Typography>
       {user?.permissions?.includes("product-add") && (

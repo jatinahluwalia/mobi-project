@@ -8,6 +8,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import { blockInvalidChar } from "../../utils/phone";
+import { toast } from "sonner";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -26,12 +27,12 @@ const SignupForm = ({ url }: Props) => {
       .max(50, "Email cannot be larger than 50 characters"),
     password: z
       .string()
-      .nonempty("Please enter a password")
+      .min(1, "Please enter a password")
       .min(8, "Minimum 8 characters")
       .max(32, "Maximum 32 characters"),
     fullName: z
       .string()
-      .nonempty("Please enter a name")
+      .min(1, "Please enter a name")
       .max(25, "Name cannot be larger than 25 characters.")
       .regex(nameRegex, "Name can only contain letters"),
     phone: z
@@ -57,40 +58,45 @@ const SignupForm = ({ url }: Props) => {
   });
 
   const onSubmit = async (data: Schema) => {
-    try {
-      await axios.post(url, data);
+    const promise = axios.post(url, data).then(() => {
       navigate("/login");
-    } catch (error) {
-      const axiosError = error as AxiosError<SignupValidationError>;
-      if (axiosError.response?.status === 406) {
-        setError(axiosError.response.data.field, {
-          message: axiosError.response.data.error,
-        });
-      } else {
-        console.log(axiosError);
-      }
-    }
+    });
+    toast.promise(promise, {
+      loading: "Signing up",
+      error: (error) => {
+        const axiosError = error as AxiosError<SignupValidationError>;
+        if (axiosError.response?.status === 406) {
+          setError(axiosError.response.data.field, {
+            message: axiosError.response.data.error,
+          });
+        } else {
+          console.log(axiosError);
+        }
+        return axiosError.response?.data.error;
+      },
+      success: "Signed up",
+    });
   };
 
   return (
     <form
-      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+      className="bg-white min-w-[300px] flex flex-col gap-5"
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
         {...register("fullName")}
         error={!!errors.fullName}
         helperText={errors.fullName?.message}
-        variant="standard"
+        variant="outlined"
         label="Full Name"
       />
       <TextField
         onKeyDown={blockInvalidChar}
-        {...register("phone", { valueAsNumber: true })}
-        type="number"
+        {...register("phone", { valueAsNumber: true, maxLength: 10 })}
+        type="tel"
         error={!!errors.phone}
         helperText={errors.phone?.message}
-        variant="standard"
+        variant="outlined"
         label="Phone number"
         InputProps={{
           startAdornment: <Typography marginRight={1}>+91</Typography>,
@@ -100,24 +106,24 @@ const SignupForm = ({ url }: Props) => {
         {...register("email")}
         error={!!errors.email}
         helperText={errors.email?.message}
-        variant="standard"
+        variant="outlined"
         label="Email"
       />
       <TextField
         {...register("password")}
         error={!!errors.password}
         helperText={errors.password?.message}
-        variant="standard"
+        variant="outlined"
         label="Password"
         type={isVisible ? "text" : "password"}
         InputProps={{
           endAdornment: isVisible ? (
             <IconButton onClick={() => setIsVisible(!isVisible)}>
-              <VisibilityIcon sx={{ width: "16px", height: "16px" }} />
+              <VisibilityIcon />
             </IconButton>
           ) : (
             <IconButton onClick={() => setIsVisible(!isVisible)}>
-              <VisibilityOffIcon sx={{ width: "16px", height: "16px" }} />
+              <VisibilityOffIcon />
             </IconButton>
           ),
         }}
@@ -125,7 +131,11 @@ const SignupForm = ({ url }: Props) => {
       {!url.includes("admin") && (
         <Typography variant="body2">
           Already have an account?
-          <Link onClick={() => navigate("/login")} className="cursor-pointer">
+          <Link
+            onClick={() => navigate("/login")}
+            className="cursor-pointer"
+            marginLeft={1}
+          >
             Login
           </Link>
         </Typography>

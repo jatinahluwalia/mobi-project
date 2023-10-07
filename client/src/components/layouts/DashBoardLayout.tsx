@@ -10,22 +10,28 @@ import {
   Card,
   CardActions,
   CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
+  LinearProgress,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   Popover,
-  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { ArrowLeft, Logout } from "@mui/icons-material";
-import { useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 const DashBoardLayout = () => {
-  const location = useLocation();
   const [anchor, setAnchor] = useState<null | HTMLButtonElement>(null);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [loading, setLoading] = useState(true);
   // const [key, setKey] = useState("");
 
   const [user, setUser] = useState<User | null>(null);
@@ -35,7 +41,7 @@ const DashBoardLayout = () => {
   const logout = () => {
     auth.dispatch({
       type: "LOGOUT",
-      payload: null as ContextUser,
+      payload: null,
     });
     navigate("/login");
   };
@@ -45,6 +51,7 @@ const DashBoardLayout = () => {
         const res = await axios.get<User>("/api/user");
         const data = res.data;
         setUser(data);
+        setLoading(false);
       } catch (error) {
         auth.dispatch({ type: "LOGOUT", payload: null });
         navigate("/login");
@@ -52,20 +59,19 @@ const DashBoardLayout = () => {
     };
     getUser();
   }, []);
-  const handleDelete = async () => {
-    try {
-      const sure = confirm("You sure you want to delete your account?");
-      if (sure) {
-        await axios.delete("/api/user");
-        auth.dispatch({
-          type: "LOGOUT",
-          payload: null,
-        });
-        navigate("/login");
-      }
-    } catch (error) {
-      console.log("Error");
-    }
+  const handleDelete = () => {
+    const promise = axios.delete("/api/user").then(() => {
+      auth.dispatch({
+        type: "LOGOUT",
+        payload: null,
+      });
+      navigate("/login");
+    });
+    toast.promise(promise, {
+      loading: "Deleting Account",
+      success: "Account Deleted",
+      error: "Error deleting account",
+    });
   };
   const handleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchor(e.currentTarget);
@@ -74,25 +80,19 @@ const DashBoardLayout = () => {
     setAnchor(null);
   };
   const open = Boolean(anchor);
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
   return (
     <div className="h-screen flex flex-col">
       {user && (
         <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200 px-5">
-          <Stack direction={"row"} alignItems={"center"}>
-            <IconButton onClick={() => navigate("/dashboard")}>
-              <Avatar src="/mobi.png"></Avatar>
-            </IconButton>
-            {location.pathname !== "/dashboard" && (
-              <Button
-                variant="outlined"
-                startIcon={<ArrowLeft />}
-                onClick={() => navigate(-1)}
-                sx={{ ml: 30 }}
-              >
-                Back
-              </Button>
-            )}
-          </Stack>
+          <IconButton onClick={() => navigate("/dashboard")}>
+            <Avatar src="/mobi.png"></Avatar>
+          </IconButton>
           <IconButton onClick={handleOpen}>
             <Avatar className="!bg-orange-500">{user.fullName[0]}</Avatar>
           </IconButton>
@@ -159,11 +159,23 @@ const DashBoardLayout = () => {
                 </Tooltip>
                 {user?.role !== "superadmin" && (
                   <Tooltip title="Delete your account" placement="top">
-                    <IconButton onClick={handleDelete}>
+                    <IconButton onClick={() => setOpenDelete(true)}>
                       <DeleteIcon fontSize="inherit" />
                     </IconButton>
                   </Tooltip>
                 )}
+                <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+                  <DialogTitle>Delete account?</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Are you sure you want to delete your account?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleDelete}>YES</Button>
+                    <Button onClick={() => setOpenDelete(false)}>NO</Button>
+                  </DialogActions>
+                </Dialog>
                 <Button
                   variant="outlined"
                   type="button"
@@ -208,7 +220,17 @@ const DashBoardLayout = () => {
             )}
           </List>
         </aside>
-        <div className="flex items-start">
+
+        <div className="flex flex-col">
+          <div className="p-5">
+            <Button
+              variant="outlined"
+              startIcon={<ArrowLeft />}
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </Button>
+          </div>
           <Outlet />
         </div>
       </section>
