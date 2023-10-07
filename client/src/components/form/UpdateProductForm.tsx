@@ -47,7 +47,7 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
   };
   return (
     <Box
-      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
+      className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5 w-max"
       component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >

@@ -23,6 +23,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { blockInvalidChar } from "../../utils/phone";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
@@ -181,6 +182,7 @@ const SignupAdmin = () => {
           label="Full Name"
         />
         <TextField
+          onKeyDown={blockInvalidChar}
           {...register("phone", { valueAsNumber: true })}
           type="number"
           error={!!errors.phone}

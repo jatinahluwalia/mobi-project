@@ -102,7 +102,13 @@ const Products = () => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="left">{product.name}</TableCell>
-                <TableCell align="left">{product.detail}</TableCell>
+                <TableCell align="left">{`${product.detail.slice(
+                  0,
+                  30
+                )}  ...  ${product.detail.slice(
+                  product.detail.length - 15,
+                  product.detail.length
+                )}`}</TableCell>
                 <TableCell align="left">{product.price}</TableCell>
                 <TableCell align="left">
                   <Stack direction={"row"} gap={2}>

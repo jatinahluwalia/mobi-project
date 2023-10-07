@@ -72,7 +72,7 @@ const UserUpdate = () => {
   const handleSave = async (values: Schema) => {
     try {
       await axios.put(`/api/user/${id}`, { ...values, permissions });
-      toast.success("User updated successfully");
+      toast.success("Updated User");
       navigate("/dashboard/users");
     } catch (error) {
       const axiosError = error as AxiosError<UpdateValidationError>;
@@ -178,6 +178,8 @@ const UserUpdate = () => {
   useEffect(() => {
     getUser();
   }, []);
+
+  console.log({ permissions });
 
   if (user?.role !== "superadmin")
     return (
