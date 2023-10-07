@@ -1,4 +1,4 @@
-import { Badge, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import UpdateProductForm from "../../components/form/UpdateProductForm";
 import axios from "axios";
 import { useState, useEffect } from "react";
