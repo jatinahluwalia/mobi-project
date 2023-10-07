@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Box,
   Button,
   Checkbox,
   IconButton,
@@ -69,7 +68,7 @@ const SignupAdmin = () => {
     resolver: zodResolver(schema),
   });
 
-  const [viewChecked, setViewChecked] = useState(false);
+  const [viewChecked, setViewChecked] = useState(true);
   const [editChecked, setEditChecked] = useState(false);
   const [addChecked, setAddChecked] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
@@ -169,9 +168,8 @@ const SignupAdmin = () => {
       <Typography variant="h2" marginBottom={5}>
         Add Admin
       </Typography>
-      <Box
+      <form
         className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
-        component={"form"}
         onSubmit={handleSubmit(onSubmit)}
       >
         <TextField
@@ -208,16 +206,16 @@ const SignupAdmin = () => {
           InputProps={{
             endAdornment: isVisible ? (
               <IconButton onClick={() => setIsVisible(!isVisible)}>
-                <VisibilityIcon />
+                <VisibilityIcon sx={{ width: "16px", height: "16px" }} />
               </IconButton>
             ) : (
               <IconButton onClick={() => setIsVisible(!isVisible)}>
-                <VisibilityOffIcon />
+                <VisibilityOffIcon sx={{ width: "16px", height: "16px" }} />
               </IconButton>
             ),
           }}
         />
-      </Box>
+      </form>
       <Typography variant="h3" marginY={5}>
         Permissions
       </Typography>

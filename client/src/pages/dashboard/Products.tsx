@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  LinearProgress,
   Pagination,
   Paper,
   Stack,
@@ -31,6 +32,7 @@ const Products = () => {
   const [pageNum, setPageNum] = useState(1);
   const [products, setProducts] = useState<PaginatedProducts | null>(null);
   const [user, setUser] = useState<User>({} as User);
+  const [loading, setLoading] = useState(true);
 
   const getData = useCallback(async () => {
     const res = await axios.get("/api/product/?page=" + pageNum);
@@ -42,6 +44,7 @@ const Products = () => {
     const res = await axios.get("/api/user");
     const data = res.data;
     setUser(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -70,6 +73,18 @@ const Products = () => {
   const handlePageChange = (_e: ChangeEvent<unknown>, pageNumber: number) => {
     setPageNum(pageNumber);
   };
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
+  if (user && !user.permissions.includes("product-view"))
+    return (
+      <Typography variant="h3" padding={5}>
+        You are not authorized to view this page
+      </Typography>
+    );
   return (
     <motion.section {...routingVariants} className="p-5 grow">
       <Typography variant="h2" marginY={5}>
@@ -164,20 +179,22 @@ const Products = () => {
             ))}
           </TableBody>
         </Table>
-        <Stack
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "row",
-          }}
-          padding={5}
-        >
-          <Pagination
-            count={products?.totalPages}
-            page={pageNum}
-            onChange={handlePageChange}
-          />
-        </Stack>
+        {products?.totalPages && products.totalPages > 1 && (
+          <Stack
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+            padding={5}
+          >
+            <Pagination
+              count={products?.totalPages}
+              page={pageNum}
+              onChange={handlePageChange}
+            />
+          </Stack>
+        )}
       </TableContainer>
     </motion.section>
   );

@@ -45,7 +45,7 @@ const AddProductForm = () => {
   };
   return (
     <Box
-      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5 w-full"
+      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5 w-[min(500px,100%)]"
       component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -60,7 +60,7 @@ const AddProductForm = () => {
       <TextareaAutosize
         {...register("detail")}
         id="detail-area"
-        className={`min-w-[500px] border border-gray-400 p-2 rounded-md focus:outline-none ${
+        className={`border border-gray-400 p-2 rounded-md focus:outline-none ${
           errors.detail ? "placeholder:text-red-600" : ""
         }`}
         placeholder="Detail"
@@ -70,6 +70,7 @@ const AddProductForm = () => {
       <TextField
         onKeyDown={blockInvalidChar}
         {...register("price", { valueAsNumber: true })}
+        type="number"
         error={!!errors.price}
         helperText={errors.price?.message}
         variant="standard"

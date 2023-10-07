@@ -1,6 +1,7 @@
 import {
   Box,
   Checkbox,
+  LinearProgress,
   Paper,
   Stack,
   Table,
@@ -21,15 +22,19 @@ const User = () => {
   const { _id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [authUser, setAuthUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const getUser = useCallback(async () => {
     const res = await axios.get("/api/user/" + _id);
     const data = res.data;
     setUser(data.user);
   }, [_id]);
+
   const getAuthUser = async () => {
     const res = await axios.get("/api/user/");
     const data = res.data;
     setAuthUser(data);
+    setLoading(false);
   };
   useEffect(() => {
     getAuthUser();
@@ -38,7 +43,15 @@ const User = () => {
   useEffect(() => {
     getUser();
   }, [getUser]);
-  if (authUser?.role !== "superadmin")
+
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
+
+  if (authUser && authUser.role !== "superadmin")
     return (
       <Typography variant="h3" padding={5}>
         You are not authorized to view this page

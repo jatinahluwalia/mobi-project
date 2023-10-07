@@ -8,10 +8,10 @@ const initialState: ContextUser = null;
 const authReducer = (state: ContextUser, action: Action) => {
   switch (action.type) {
     case "LOGIN":
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      sessionStorage.setItem("user", JSON.stringify(action.payload));
       return action.payload;
     case "LOGOUT":
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
       return null;
     default:
       return state;
@@ -22,7 +22,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   axios.defaults.headers["Authorization"] = `Bearer ${state?.token}`;
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user = sessionStorage.getItem("user");
     if (user) {
       dispatch({
         type: "LOGIN",

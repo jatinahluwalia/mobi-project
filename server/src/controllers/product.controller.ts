@@ -57,3 +57,12 @@ export const deleteProduct = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const countProducts = async (req: Request, res: Response) => {
+  try {
+    const count = await Product.countDocuments();
+    return res.status(200).json({ count });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};

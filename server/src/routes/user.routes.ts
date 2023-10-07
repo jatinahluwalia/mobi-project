@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  countAdmins,
+  countUsers,
   deleteOtherUser,
   deleteSelf,
   forgotPass,
@@ -10,11 +12,12 @@ import {
   showOne,
   signup,
   signupAdmin,
+  toAdmin,
   updateOtherUser,
   updateSelf,
 } from "../controllers/user.controller";
 import { checkAuth } from "../middlewares/auth";
-import { isSuperAdmin } from "../middlewares/roles";
+import { isAdminOrSuperAdmin, isSuperAdmin } from "../middlewares/roles";
 import { verifyForgetToken } from "../middlewares/forget";
 const userRouter = express.Router();
 
@@ -186,7 +189,64 @@ userRouter.put("/", checkAuth, updateSelf);
  */
 userRouter.delete("/", checkAuth, deleteSelf);
 
+/**
+ * @openapi
+ * /api/user/forgot-pass:
+ *  post:
+ *    summary: Forget Password
+ *    security:
+ *      bearerAuth: []
+ *    description: Generated a link with reset password token and mails it
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              email:
+ *                type: string
+ *                required: true
+ *    responses:
+ *      200:
+ *        description: Mail sent successfully
+ *      406:
+ *        description: User not found
+ *      500:
+ *        description: Some error occurred
+ */
 userRouter.post("/forgot-pass", forgotPass);
+/**
+ * @openapi
+ * /api/user/reset:
+ *  post:
+ *    summary: Reset Password
+ *    description: Reset Password if the token is valid
+ *    parameters:
+ *      name: token
+ *      in: header
+ *      description: Token aur verifying
+ *      required: true
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              password:
+ *                type: string
+ *                required: true
+ *              confirmPassword:
+ *                type: string
+ *                required: true
+ *    responses:
+ *      200:
+ *        description: Password reset successfully
+ *      406:
+ *        description: Token invalid
+ *      500:
+ *        description: Some error occurred
+ */
+
 userRouter.post("/reset", verifyForgetToken, resetPass);
 
 /**
@@ -208,6 +268,34 @@ userRouter.post("/reset", verifyForgetToken, resetPass);
  *        description: Some error occurred
  */
 userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
+
+userRouter.get("/count-users", checkAuth, isAdminOrSuperAdmin, countUsers);
+
+userRouter.get("/count-admins", checkAuth, isSuperAdmin, countAdmins);
+
+userRouter.put("/to-admin", checkAuth, isSuperAdmin, toAdmin);
+
+/**
+ * @openapi
+ * /api/user/{_id}:
+ *  get:
+ *    summary: Display a user by ID
+ *    description: Display a user by ID
+ *    parameters:
+ *      - in: path
+ *        name: _id
+ *        required: true
+ *        description: ID of the user to display
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: user fetched successfully
+ *      404:
+ *        description: user not found
+ *      500:
+ *        description: Some error occurred
+ */
 userRouter.get("/:_id", checkAuth, isSuperAdmin, showOne);
 
 /**

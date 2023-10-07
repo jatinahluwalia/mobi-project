@@ -1,5 +1,5 @@
 import { CurrencyRupee } from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
+import { LinearProgress, Stack, Typography } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -7,6 +7,15 @@ import { useParams } from "react-router-dom";
 const Product = () => {
   const { _id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+
+  const getUser = useCallback(async () => {
+    const res = await axios.get(`/api/user`);
+    const data = res.data;
+    setUser(data);
+    setLoading(false);
+  }, []);
 
   const getProduct = useCallback(async () => {
     const res = await axios.get(`/api/product/${_id}`);
@@ -17,6 +26,23 @@ const Product = () => {
   useEffect(() => {
     getProduct();
   }, [getProduct]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
+
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
+  if (user && !user.permissions.includes("product-view"))
+    return (
+      <Typography variant="h3" padding={5}>
+        You are not authorized to view this page
+      </Typography>
+    );
 
   return (
     <Stack padding={5}>

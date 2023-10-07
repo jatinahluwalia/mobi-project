@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  LinearProgress,
   Pagination,
   Paper,
   Stack,
@@ -23,7 +24,13 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
-import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
+import {
+  Add,
+  AdminPanelSettings,
+  Delete,
+  Edit,
+  Visibility,
+} from "@mui/icons-material";
 import { toast } from "sonner";
 
 const Users = () => {
@@ -32,6 +39,8 @@ const Users = () => {
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
   const [user, setUser] = useState<User>({} as User);
   const [open, setOpen] = useState(false);
+  const [openRole, setOpenRole] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const getData = useCallback(async () => {
     const res = await axios.get("/api/user/all/?page=" + pageNum);
@@ -43,6 +52,7 @@ const Users = () => {
     const res = await axios.get("/api/user");
     const data = res.data;
     setUser(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -72,7 +82,26 @@ const Users = () => {
       toast.error("Some Error occured");
     }
   };
-  if (user?.role !== "superadmin")
+
+  const handleMakeAdmin = async (_id: string) => {
+    try {
+      await axios.put("/api/user/to-admin", { _id });
+      setOpenRole(false);
+      toast.success("Role changed successfully");
+      getData();
+    } catch (error) {
+      toast.error("Error occured");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
+
+  if (user && user.role !== "superadmin")
     return (
       <Typography variant="h3" padding={5}>
         You are not authorized to view this page
@@ -132,17 +161,51 @@ const Users = () => {
                           </IconButton>
                         </Tooltip>
 
-                        <Tooltip title="Edit User">
-                          <IconButton
-                            onClick={() =>
-                              navigate(
-                                "/dashboard/users/update/" + userByID._id
-                              )
-                            }
-                          >
-                            <Edit />
-                          </IconButton>
-                        </Tooltip>
+                        {userByID.role === "admin" ? (
+                          <Tooltip title="Edit User">
+                            <IconButton
+                              onClick={() =>
+                                navigate(
+                                  "/dashboard/users/update/" + userByID._id
+                                )
+                              }
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Make admin">
+                            <IconButton onClick={() => setOpenRole(true)}>
+                              <AdminPanelSettings />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <Dialog
+                          open={openRole}
+                          onClose={() => setOpenRole(false)}
+                          aria-labelledby="role-dialog-title"
+                          aria-describedby="role-dialog-description"
+                        >
+                          <DialogTitle id="role-dialog-title">
+                            Change Role
+                          </DialogTitle>
+                          <DialogContent>
+                            <DialogContentText id="role-dialog-description">
+                              Are you sure you want to make this user admin?
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={() => setOpenRole(false)}>
+                              NO
+                            </Button>
+                            <Button
+                              onClick={() => handleMakeAdmin(userByID._id)}
+                              autoFocus
+                            >
+                              YES
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                         <Tooltip title="Delete User">
                           <IconButton onClick={() => setOpen(true)}>
                             <Delete />
@@ -179,20 +242,22 @@ const Users = () => {
             )}
           </TableBody>
         </Table>
-        <Stack
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "row",
-          }}
-          padding={5}
-        >
-          <Pagination
-            count={users?.totalPages}
-            page={pageNum}
-            onChange={handlePageChange}
-          />
-        </Stack>
+        {users?.totalPages && users.totalPages > 1 && (
+          <Stack
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+            padding={5}
+          >
+            <Pagination
+              count={users?.totalPages}
+              page={pageNum}
+              onChange={handlePageChange}
+            />
+          </Stack>
+        )}
       </TableContainer>
     </motion.section>
   );

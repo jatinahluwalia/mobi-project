@@ -2,6 +2,7 @@ import { isAdminOrSuperAdmin, isSuperAdmin } from "./../middlewares/roles";
 import express from "express";
 import {
   addProduct,
+  countProducts,
   deleteProduct,
   displayAll,
   displayOne,
@@ -34,6 +35,12 @@ const productRouter = express.Router();
  *        description: Some error occurred
  */
 productRouter.get("/", checkAuth, checkPermission("product-view"), displayAll);
+productRouter.get(
+  "/count",
+  checkAuth,
+  checkPermission("product-view"),
+  countProducts
+);
 
 /**
  * @openapi

@@ -85,10 +85,11 @@ const DashBoardLayout = () => {
             {location.pathname !== "/dashboard" && (
               <Button
                 variant="outlined"
-                endIcon={<ArrowLeft />}
+                startIcon={<ArrowLeft />}
                 onClick={() => navigate(-1)}
+                sx={{ ml: 30 }}
               >
-                Go Back
+                Back
               </Button>
             )}
           </Stack>

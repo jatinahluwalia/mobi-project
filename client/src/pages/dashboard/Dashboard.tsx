@@ -1,4 +1,10 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  LinearProgress,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -6,22 +12,37 @@ import { Link } from "react-router-dom";
 import { routingVariants } from "../../utils/animation";
 
 const Dashboard = () => {
-  const [products, setProducts] = useState<PaginatedProducts | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<PaginatedUsers | null>(null);
+  const [productCount, setProductCount] = useState<number | null>(null);
+  const [adminCount, setAdminCount] = useState<number | null>(null);
+  const [userCount, setUserCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    axios.get("/api/product").then((res) => {
-      setProducts(res.data.products);
+    axios.get("/api/product/count").then((res) => {
+      setProductCount(res.data.count);
     });
 
     axios.get("/api/user").then((res) => {
       setUser(res.data);
+      setLoading(false);
     });
 
-    axios.get("/api/user/all").then((res) => {
-      setUsers(res.data.users);
+    axios.get("/api/user/count-users").then((res) => {
+      setUserCount(res.data.count);
+    });
+
+    axios.get("/api/user/count-admins").then((res) => {
+      setAdminCount(res.data.count);
     });
   }, []);
+
+  if (loading)
+    return (
+      <div className="fixed top-0 left-0 w-full">
+        <LinearProgress />
+      </div>
+    );
 
   return (
     <motion.div {...routingVariants}>
@@ -30,15 +51,15 @@ const Dashboard = () => {
         <Box className="flex gap-5 mt-5">
           {user?.permissions.includes("product-view") && (
             <Card>
-              <Link
-                to={"/dashboard/products"}
-                className="flex flex-col items-center"
-              >
-                <CardContent>
+              <CardContent>
+                <Link
+                  to={"/dashboard/products"}
+                  className="flex flex-col items-center"
+                >
                   <Typography variant="h4"> Total Products</Typography>
-                  <Typography variant="h5">{products?.totalDocs}</Typography>
-                </CardContent>
-              </Link>
+                  <Typography variant="h5">{productCount}</Typography>
+                </Link>
+              </CardContent>
             </Card>
           )}
           {user?.role === "superadmin" && (
@@ -48,14 +69,29 @@ const Dashboard = () => {
                   to={"/dashboard/users"}
                   className="flex flex-col items-center"
                 >
-                  <Typography variant="h4"> Total Users</Typography>
-                  <Typography variant="h5">{users?.totalDocs}</Typography>
+                  <Typography variant="h4"> Total Admins</Typography>
+                  <Typography variant="h5">{adminCount}</Typography>
                 </Link>
               </CardContent>
             </Card>
           )}
-          {user?.role !== "superadmin" &&
-            !user?.permissions.includes("product-view") && (
+
+          {(user?.role === "superadmin" || user?.role === "admin") && (
+            <Card>
+              <CardContent>
+                <Link
+                  to={"/dashboard/users"}
+                  className="flex flex-col items-center"
+                >
+                  <Typography variant="h4"> Total Users</Typography>
+                  <Typography variant="h5">{userCount}</Typography>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+          {user &&
+            user.role !== "superadmin" &&
+            !user.permissions.includes("product-view") && (
               <Typography variant="h3" marginY={5}>
                 You are not allowed any actions.
               </Typography>

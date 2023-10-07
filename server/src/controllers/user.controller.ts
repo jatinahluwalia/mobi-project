@@ -86,7 +86,7 @@ export const signup = async (req: Request, res: Response) => {
       email,
       hashedPassword,
       phone,
-      permissions: [],
+      permissions: ["product-view"],
     });
     res.status(200).json({ message: "Signed up successfully" });
   } catch (error: any) {
@@ -276,6 +276,37 @@ export const resetPass = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const toAdmin = async (req: Request, res: Response) => {
+  try {
+    const { _id } = req.body;
+    await User.findByIdAndUpdate(_id, {
+      role: "admin",
+      permissions: ["product-view"],
+    });
+    return res.status(200).json({ message: "Changed role successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const countUsers = async (req: Request, res: Response) => {
+  try {
+    const count = await User.countDocuments({ role: "user" });
+    return res.status(200).json({ count });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const countAdmins = async (req: Request, res: Response) => {
+  try {
+    const count = await User.countDocuments({ role: "admin" });
+    return res.status(200).json({ count });
+  } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
 };

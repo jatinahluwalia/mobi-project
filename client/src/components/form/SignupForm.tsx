@@ -1,12 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Box,
-  Button,
-  IconButton,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, IconButton, Link, TextField, Typography } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -80,9 +73,8 @@ const SignupForm = ({ url }: Props) => {
   };
 
   return (
-    <Box
+    <form
       className="p-5 rounded-lg bg-white shadow-md min-w-[300px] flex flex-col gap-5"
-      component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
@@ -121,11 +113,11 @@ const SignupForm = ({ url }: Props) => {
         InputProps={{
           endAdornment: isVisible ? (
             <IconButton onClick={() => setIsVisible(!isVisible)}>
-              <VisibilityIcon />
+              <VisibilityIcon sx={{ width: "16px", height: "16px" }} />
             </IconButton>
           ) : (
             <IconButton onClick={() => setIsVisible(!isVisible)}>
-              <VisibilityOffIcon />
+              <VisibilityOffIcon sx={{ width: "16px", height: "16px" }} />
             </IconButton>
           ),
         }}
@@ -141,7 +133,7 @@ const SignupForm = ({ url }: Props) => {
       <Button variant="contained" type="submit">
         Signup
       </Button>
-    </Box>
+    </form>
   );
 };
 
