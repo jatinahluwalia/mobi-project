@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CurrencyRupee } from "@mui/icons-material";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, TextareaAutosize } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +45,7 @@ const AddProductForm = () => {
   };
   return (
     <Box
-      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5"
+      className="p-5 rounded-lg bg-white shadow-md flex flex-col gap-5 w-full"
       component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -56,16 +56,16 @@ const AddProductForm = () => {
         variant="standard"
         label="Name"
       />
-      <div className="border border-gray-400 rounded-md overflow-hidden p-2">
-        <textarea
-          {...register("detail")}
-          id="detail-area"
-          className={`min-w-[500px] focus:outline-none ${
-            errors.detail ? "placeholder:text-red-600" : ""
-          }`}
-          placeholder="Detail"
-        />
-      </div>
+
+      <TextareaAutosize
+        {...register("detail")}
+        id="detail-area"
+        className={`min-w-[500px] border border-gray-400 p-2 rounded-md focus:outline-none ${
+          errors.detail ? "placeholder:text-red-600" : ""
+        }`}
+        placeholder="Detail"
+        minRows={7}
+      />
       {errors.detail && <p className="text-red-600">{errors.detail.message}</p>}
       <TextField
         onKeyDown={blockInvalidChar}

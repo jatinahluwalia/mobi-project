@@ -17,9 +17,12 @@ const UpdateProduct = () => {
   }, [_id]);
   return (
     product && (
-      <Stack padding={5}>
-        <Typography variant="h2" marginBottom={5}>
-          Update Product: <Badge color="primary">{product?.name}</Badge>
+      <Stack padding={5} width={"100%"}>
+        <Typography variant="h2" marginBottom={5} component={"span"}>
+          Update Product:{" "}
+          <Typography variant="h2" component={"span"} color="primary">
+            {product?.name}
+          </Typography>
         </Typography>
         <UpdateProductForm
           _id={String(_id)}
