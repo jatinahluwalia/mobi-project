@@ -5,8 +5,9 @@ export const displayAll = async (req: Request, res: Response) => {
   try {
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const regex = new RegExp(String(req.query.search || ""), "i");
     const products = await Product.paginate(
-      {},
+      { $or: [{ name: { $regex: regex } }, { detail: { $regex: regex } }] },
       {
         page,
         limit,

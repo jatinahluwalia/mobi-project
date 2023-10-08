@@ -19,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
@@ -27,7 +28,7 @@ import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { toast } from "sonner";
 const Products = () => {
   const [open, setOpen] = useState(false);
-
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(1);
   const [products, setProducts] = useState<PaginatedProducts | null>(null);
@@ -35,10 +36,12 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
 
   const getData = useCallback(async () => {
-    const res = await axios.get("/api/product/?page=" + pageNum);
+    const res = await axios.get(
+      `/api/product/?page=${pageNum}&search=${query}`
+    );
     const data = res.data;
     setProducts(data.products);
-  }, [pageNum]);
+  }, [query, pageNum]);
 
   const getUser = async () => {
     const res = await axios.get("/api/user");
@@ -96,16 +99,23 @@ const Products = () => {
       <Typography variant="h2" marginBottom={5}>
         Products Management
       </Typography>
-      {user?.permissions?.includes("product-add") && (
-        <Button
-          onClick={() => navigate("/dashboard/products/add")}
-          endIcon={<Add />}
-          sx={{ marginBottom: 5 }}
-          variant="outlined"
-        >
-          Add Product
-        </Button>
-      )}
+      <div className="flex gap-5">
+        {user?.permissions?.includes("product-add") && (
+          <Button
+            onClick={() => navigate("/dashboard/products/add")}
+            endIcon={<Add />}
+            variant="outlined"
+          >
+            Add Product
+          </Button>
+        )}
+        <TextField
+          name="search"
+          label="Search by name or detail"
+          onChange={(e) => setQuery(e.target.value)}
+          sx={{ minWidth: 450 }}
+        />
+      </div>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
