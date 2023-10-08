@@ -1,4 +1,4 @@
-import { LinearProgress, Stack, Typography } from "@mui/material";
+import { LinearProgress, Typography } from "@mui/material";
 import UpdateProductForm from "../../components/form/UpdateProductForm";
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
@@ -53,7 +53,7 @@ const UpdateProduct = () => {
     );
   return (
     product && (
-      <Stack padding={5} width={"100%"}>
+      <div className="flex flex-col p-5 w-full">
         <Typography variant="h2" marginBottom={5} component={"span"}>
           Update Product:{" "}
           <Typography variant="h2" component={"span"} color="primary">
@@ -65,8 +65,9 @@ const UpdateProduct = () => {
           detail={product.detail}
           name={product.name}
           price={product.price}
+          hero={product.hero}
         />
-      </Stack>
+      </div>
     )
   );
 };

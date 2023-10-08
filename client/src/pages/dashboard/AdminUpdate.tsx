@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { blockInvalidChar } from "../../utils/phone";
@@ -59,13 +59,9 @@ const AdminUpdate = () => {
     register,
     handleSubmit,
     setError,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<Schema>({
-    defaultValues: {
-      email: "",
-      fullName: "",
-    },
     resolver: zodResolver(schema),
     mode: "all",
   });
@@ -99,11 +95,9 @@ const AdminUpdate = () => {
     setEditChecked(data.user.permissions.includes("product-edit"));
     setAddChecked(data.user.permissions.includes("product-add"));
     setDeleteChecked(data.user.permissions.includes("product-delete"));
-    setValue("email", data.user.email);
-    setValue("fullName", data.user.fullName);
-    setValue("phone", data.user.phone);
+
     setUserByID(data.user);
-  }, [_id, setValue]);
+  }, [_id]);
 
   const getUser = async () => {
     const res = await axios.get("/api/user/");
@@ -199,7 +193,7 @@ const AdminUpdate = () => {
     return (
       <motion.section {...routingVariants} className="p-5 grow">
         <Typography variant="h2" marginY={5}>
-          Update User
+          Update Admin
         </Typography>
         <Typography variant="h4" marginBottom={5}>
           {userByID?.fullName}
@@ -210,103 +204,126 @@ const AdminUpdate = () => {
       </motion.section>
     );
   return (
-    <motion.section {...routingVariants} className="p-5 grow">
-      <Typography variant="h2" marginY={5}>
-        Update User
-      </Typography>
-      {/* <Typography variant="h4" marginBottom={5}>
+    userByID && (
+      <motion.section {...routingVariants} className="p-5 grow">
+        <Typography variant="h2" marginY={5}>
+          Update Admin
+        </Typography>
+        {/* <Typography variant="h4" marginBottom={5}>
         {userByID?.fullName}
       </Typography> */}
-      <form
-        className="bg-white w-[min(600px,100%)] flex flex-col gap-5 mb-5"
-        onSubmit={handleSubmit(handleSave)}
-      >
-        <TextField
-          {...register("fullName")}
-          error={!!errors.fullName}
-          helperText={errors.fullName?.message}
-          variant="outlined"
-          label="Full Name"
-        />
-        <TextField
-          onKeyDown={blockInvalidChar}
-          {...register("phone", { valueAsNumber: true })}
-          type="number"
-          error={!!errors.phone}
-          helperText={errors.phone?.message}
-          variant="outlined"
-          label="Phone number"
-          InputProps={{ startAdornment: <Typography>+91</Typography> }}
-        />
-        <TextField
-          {...register("email")}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-          variant="outlined"
-          label="Email"
-        />
-      </form>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left">Permissions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow
-              key="product"
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell align="left">Product Management</TableCell>
-              <TableCell align="left">
-                <Stack direction="row" spacing={2}>
-                  <Stack direction={"column"} alignItems={"center"}>
-                    <Checkbox
-                      checked={viewChecked}
-                      onChange={() => setViewChecked(!viewChecked)}
-                    />
-                    <Typography>View</Typography>
-                  </Stack>
-                  <Stack direction={"column"} alignItems={"center"}>
-                    <Checkbox
-                      checked={editChecked}
-                      onChange={() => setEditChecked(!editChecked)}
-                    />
-                    <Typography>Edit</Typography>
-                  </Stack>
-                  <Stack direction={"column"} alignItems={"center"}>
-                    <Checkbox
-                      checked={addChecked}
-                      onChange={() => setAddChecked(!addChecked)}
-                    />
-                    <Typography>Add</Typography>
-                  </Stack>
-                  <Stack direction={"column"} alignItems={"center"}>
-                    <Checkbox
-                      checked={deleteChecked}
-                      onChange={() => setDeleteChecked(!deleteChecked)}
-                    />
-                    <Typography>Delete</Typography>
-                  </Stack>
-                </Stack>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Stack alignItems={"end"}>
-        <Button
-          variant="contained"
-          sx={{ margin: 5 }}
-          type="button"
-          onClick={handleSubmit(handleSave)}
+        <form
+          className="bg-white w-[min(600px,100%)] flex flex-col gap-5 mb-5 p-5 rounded-md"
+          onSubmit={handleSubmit(handleSave)}
         >
-          Save
-        </Button>
-      </Stack>
-    </motion.section>
+          <Controller
+            name="fullName"
+            control={control}
+            defaultValue={userByID.fullName}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                error={!!errors.fullName}
+                helperText={errors.fullName?.message}
+                variant="outlined"
+                label="Full Name"
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="phone"
+            defaultValue={userByID.phone}
+            render={() => (
+              <TextField
+                onKeyDown={blockInvalidChar}
+                {...register("phone", { valueAsNumber: true })}
+                type="number"
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+                variant="outlined"
+                label="Phone number"
+                InputProps={{ startAdornment: <Typography>+91</Typography> }}
+              />
+            )}
+          />
+          <Controller
+            name="email"
+            control={control}
+            defaultValue={userByID.email}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                variant="outlined"
+                label="Full Name"
+              />
+            )}
+          />
+        </form>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Name</TableCell>
+                <TableCell align="left">Permissions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow
+                key="product"
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell align="left">Product Management</TableCell>
+                <TableCell align="left">
+                  <Stack direction="row" spacing={2}>
+                    <Stack direction={"column"} alignItems={"center"}>
+                      <Checkbox
+                        checked={viewChecked}
+                        onChange={() => setViewChecked(!viewChecked)}
+                      />
+                      <Typography>View</Typography>
+                    </Stack>
+                    <Stack direction={"column"} alignItems={"center"}>
+                      <Checkbox
+                        checked={editChecked}
+                        onChange={() => setEditChecked(!editChecked)}
+                      />
+                      <Typography>Edit</Typography>
+                    </Stack>
+                    <Stack direction={"column"} alignItems={"center"}>
+                      <Checkbox
+                        checked={addChecked}
+                        onChange={() => setAddChecked(!addChecked)}
+                      />
+                      <Typography>Add</Typography>
+                    </Stack>
+                    <Stack direction={"column"} alignItems={"center"}>
+                      <Checkbox
+                        checked={deleteChecked}
+                        onChange={() => setDeleteChecked(!deleteChecked)}
+                      />
+                      <Typography>Delete</Typography>
+                    </Stack>
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Stack alignItems={"end"}>
+          <Button
+            variant="contained"
+            sx={{ margin: 5 }}
+            type="button"
+            onClick={handleSubmit(handleSave)}
+          >
+            Save
+          </Button>
+        </Stack>
+      </motion.section>
+    )
   );
 };
 

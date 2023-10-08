@@ -1,4 +1,4 @@
-import { Card, CardContent, LinearProgress, Typography } from "@mui/material";
+import { LinearProgress, Typography } from "@mui/material";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -44,44 +44,38 @@ const Dashboard = () => {
         <Typography variant="h4">Dashboard</Typography>
         <div className="flex gap-5 mt-5">
           {user?.permissions.includes("product-view") && (
-            <Card>
-              <CardContent>
-                <Link
-                  to={"/dashboard/products"}
-                  className="flex flex-col items-center"
-                >
-                  <Typography variant="h5"> Total Products</Typography>
-                  <Typography variant="h6">{productCount}</Typography>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="rounded-md p-5 bg-white hover:outline-[1px] hover:outline hover:outline-gray-600">
+              <Link
+                to={"/dashboard/products"}
+                className="flex flex-col items-center"
+              >
+                <Typography variant="h5"> Total Products</Typography>
+                <Typography variant="h6">{productCount}</Typography>
+              </Link>
+            </div>
           )}
           {user?.role === "Super Admin" && (
-            <Card>
-              <CardContent>
-                <Link
-                  to={"/dashboard/admins"}
-                  className="flex flex-col items-center"
-                >
-                  <Typography variant="h5"> Total Admins</Typography>
-                  <Typography variant="h6">{adminCount}</Typography>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="rounded-md p-5 bg-white hover:outline-[1px] hover:outline hover:outline-gray-600">
+              <Link
+                to={"/dashboard/admins"}
+                className="flex flex-col items-center"
+              >
+                <Typography variant="h5"> Total Admins</Typography>
+                <Typography variant="h6">{adminCount}</Typography>
+              </Link>
+            </div>
           )}
 
           {(user?.role === "Super Admin" || user?.role === "Admin") && (
-            <Card>
-              <CardContent>
-                <Link
-                  to={"/dashboard/customers"}
-                  className="flex flex-col items-center"
-                >
-                  <Typography variant="h5"> Total Customers</Typography>
-                  <Typography variant="h6">{userCount}</Typography>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="rounded-md p-5 bg-white hover:outline-[1px] hover:outline hover:outline-gray-600">
+              <Link
+                to={"/dashboard/customers"}
+                className="flex flex-col items-center"
+              >
+                <Typography variant="h5"> Total Customers</Typography>
+                <Typography variant="h6">{userCount}</Typography>
+              </Link>
+            </div>
           )}
           {user &&
             user.role !== "Super Admin" &&

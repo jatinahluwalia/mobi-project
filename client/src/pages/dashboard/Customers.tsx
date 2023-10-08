@@ -141,7 +141,7 @@ const Customers = () => {
           variant="outlined"
           label="Search by name..."
           onChange={(e) => setQuery(e.target.value)}
-          sx={{ minWidth: 450 }}
+          sx={{ minWidth: 450, backgroundColor: "white" }}
         />
       </div>
       <TableContainer component={Paper}>

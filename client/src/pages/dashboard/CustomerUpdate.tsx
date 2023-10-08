@@ -125,7 +125,7 @@ const CustomerUpdate = () => {
         {userByID?.fullName}
       </Typography> */}
       <form
-        className="bg-white w-[min(600px,100%)] flex flex-col gap-5 mb-5"
+        className="bg-white w-[min(600px,100%)] flex flex-col gap-5 mb-5 rounded-md p-5"
         onSubmit={handleSubmit(handleSave)}
       >
         <TextField

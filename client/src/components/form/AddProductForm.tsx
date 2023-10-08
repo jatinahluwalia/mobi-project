@@ -52,7 +52,7 @@ const AddProductForm = () => {
   };
   return (
     <form
-      className="grid gap-5 w-[min(500px,100%)]"
+      className="grid gap-5 w-[min(600px,100%)] bg-white p-5 rounded-md"
       onSubmit={handleSubmit(onSubmit)}
     >
       <TextField
@@ -95,7 +95,7 @@ const AddProductForm = () => {
       <Button
         variant="contained"
         type="submit"
-        sx={{ width: "max-content", ml: "auto" }}
+        sx={{ width: "150px", ml: "auto" }}
       >
         Add
       </Button>

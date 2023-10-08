@@ -1,5 +1,4 @@
 import {
-  Box,
   Checkbox,
   LinearProgress,
   Paper,
@@ -62,7 +61,7 @@ const User = () => {
       <Typography variant="h2" marginBottom={5}>
         {user?.fullName.split(" ")[0]} Profile
       </Typography>
-      <Box>
+      <div>
         <Typography variant="h4" fontWeight={900}>
           {user?.fullName}
         </Typography>
@@ -83,7 +82,7 @@ const User = () => {
           </Typography>
           <Typography variant="body1">{user?.phone}</Typography>
         </Stack>
-      </Box>
+      </div>
       <TableContainer component={Paper} sx={{ width: "100%", marginTop: 5 }}>
         <Table>
           <TableHead>

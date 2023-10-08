@@ -99,12 +99,13 @@ const Products = () => {
       <Typography variant="h2" marginBottom={5}>
         Products Management
       </Typography>
-      <div className="flex gap-5">
+      <div className="flex gap-5 mb-5">
         {user?.permissions?.includes("product-add") && (
           <Button
             onClick={() => navigate("/dashboard/products/add")}
             endIcon={<Add />}
             variant="outlined"
+            sx={{ backgroundColor: "white" }}
           >
             Add Product
           </Button>
@@ -113,7 +114,7 @@ const Products = () => {
           name="search"
           label="Search by name or detail"
           onChange={(e) => setQuery(e.target.value)}
-          sx={{ minWidth: 450 }}
+          sx={{ minWidth: 450, backgroundColor: "white" }}
         />
       </div>
       <TableContainer component={Paper}>

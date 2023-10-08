@@ -94,7 +94,7 @@ const DashBoardLayout = () => {
   return (
     <div className="h-screen flex flex-col">
       {user && (
-        <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200  bg-[#f6f6f6] px-5">
+        <div className="border-b flex justify-between items-center gap-2 py-2 border-gray-200   px-5">
           <IconButton onClick={() => navigate("/dashboard")}>
             <Avatar src="/mobi.png"></Avatar>
           </IconButton>
@@ -194,7 +194,7 @@ const DashBoardLayout = () => {
         </div>
       )}
       <section className="grid grid-cols-[300px_1fr] grow">
-        <aside className="flex flex-col divide-y-[1px] divide-gray-800 border-r border-gray-200 bg-[#f6f6f6]">
+        <aside className="flex flex-col divide-y-[1px] divide-gray-800 border-r border-gray-200 ">
           <List>
             <ListItem disablePadding>
               <ListItemButton onClick={() => navigate("/dashboard")}>
@@ -236,12 +236,14 @@ const DashBoardLayout = () => {
           </List>
         </aside>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col bg-[#f6f6f6]">
           <div className="p-5">
             <Button
               variant="outlined"
               startIcon={<ArrowLeft />}
               onClick={() => navigate(-1)}
+              color="secondary"
+              sx={{ backgroundColor: "white" }}
             >
               Back
             </Button>

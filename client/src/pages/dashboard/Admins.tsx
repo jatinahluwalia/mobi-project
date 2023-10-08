@@ -120,12 +120,13 @@ const Admins = () => {
       <Typography variant="h2" marginBottom={5}>
         Admins Management
       </Typography>
-      <div className="flex gap-2 mb-5">
+      <div className="flex gap-5 mb-5">
         {["Super Admin"].includes(String(user?.role)) && (
           <Button
             onClick={() => navigate("/dashboard/signup-admin")}
             endIcon={<Add />}
             variant="outlined"
+            sx={{ backgroundColor: "white" }}
           >
             Add Admin
           </Button>
@@ -135,7 +136,7 @@ const Admins = () => {
           variant="outlined"
           label="Search by name..."
           onChange={(e) => setQuery(e.target.value)}
-          sx={{ minWidth: 450 }}
+          sx={{ minWidth: 450, backgroundColor: "white" }}
         />
       </div>
       <TableContainer component={Paper}>

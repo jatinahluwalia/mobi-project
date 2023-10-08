@@ -175,7 +175,7 @@ const SignupAdmin = () => {
         Add Admin
       </Typography>
       <form
-        className="bg-white w-[min(800px,100%)] grid grid-cols-2 gap-5"
+        className="bg-white w-[min(600px,100%)] flex flex-col gap-5 rounded-md p-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <TextField

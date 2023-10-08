@@ -1,5 +1,5 @@
 import { CurrencyRupee } from "@mui/icons-material";
-import { LinearProgress, Stack, Typography } from "@mui/material";
+import { LinearProgress, Typography } from "@mui/material";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -45,23 +45,29 @@ const Product = () => {
     );
 
   return (
-    <Stack padding={5}>
-      <Typography variant="h3" component="h1">
-        {product?.name}
-      </Typography>
-      <Typography variant="body1" component="p" color={"text.secondary"}>
-        {product?.detail}
-      </Typography>
-      <Stack direction={"row"} gap={1} alignItems={"center"} marginTop={3}>
-        <CurrencyRupee />
-        <Typography variant="body1" component="p">
-          {product?.price}
+    <div className="p-5">
+      <div className="flex gap-5 items-center mb-3">
+        <Typography variant="h3" component="h1">
+          {product?.name}
         </Typography>
-      </Stack>
-      <Typography variant="body1" component="p" marginTop={1}>
-        {product?.hero}
-      </Typography>
-    </Stack>
+        <div className="flex gap-1 items-center p-2 rounded-md border border-blue-700 text-blue-700 bg-blue-50">
+          <CurrencyRupee />
+          <Typography variant="body1" component="p">
+            {product?.price}
+          </Typography>
+        </div>
+        <div className="bg-purple-50 w-max p-2 border border-purple-700 text-purple-700 rounded-md h-max">
+          <Typography variant="body1" component="p">
+            {product?.hero}
+          </Typography>
+        </div>
+      </div>
+      <div className="bg-white p-5 rounded-md">
+        <Typography variant="body1" component="p">
+          {product?.detail}
+        </Typography>
+      </div>
+    </div>
   );
 };
 
