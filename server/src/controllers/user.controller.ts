@@ -131,7 +131,7 @@ export const signupAdmin = async (req: Request, res: Response) => {
       hashedPassword,
       fullName,
       phone,
-      role: "admin",
+      role: "Admin",
       permissions,
     });
     transporter.sendMail({
@@ -181,7 +181,18 @@ export const profile = async (req: Request, res: Response) => {
 export const updateOtherUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await User.findOneAndUpdate({ _id: id }, req.body);
+    const { permissions, ...rest } = req.body;
+    await User.findOneAndUpdate({ _id: id, role: "Customer" }, rest);
+    return res.status(200).json({ message: "Updated successfully" });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateOtherAdmin = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await User.findOneAndUpdate({ _id: id, role: "Admin" }, req.body);
     return res.status(200).json({ message: "Updated successfully" });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
@@ -203,6 +214,47 @@ export const showAll = async (req: Request, res: Response) => {
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.limit) : 10;
     const users = await User.paginate({}, { page, limit });
+    return res.json({ users });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const showAllAdmins = async (req: Request, res: Response) => {
+  try {
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const regex = new RegExp(String(req.query.search || ""), "i");
+    const users = await User.paginate(
+      {
+        role: "Admin",
+        fullName: {
+          $regex: regex,
+        },
+      },
+      { page, limit }
+    );
+    return res.json({ users });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const showAllCustomers = async (req: Request, res: Response) => {
+  try {
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const regex = new RegExp(String(req.query.search || ""), "i");
+
+    const users = await User.paginate(
+      {
+        role: "Customer",
+        fullName: {
+          $regex: regex,
+        },
+      },
+      { page, limit }
+    );
     return res.json({ users });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
@@ -284,7 +336,7 @@ export const toAdmin = async (req: Request, res: Response) => {
   try {
     const { _id } = req.body;
     await User.findByIdAndUpdate(_id, {
-      role: "admin",
+      role: "Admin",
       permissions: ["product-view"],
     });
     return res.status(200).json({ message: "Changed role successfully" });
@@ -295,7 +347,7 @@ export const toAdmin = async (req: Request, res: Response) => {
 
 export const countUsers = async (req: Request, res: Response) => {
   try {
-    const count = await User.countDocuments({ role: "user" });
+    const count = await User.countDocuments({ role: "Customer" });
     return res.status(200).json({ count });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
@@ -304,7 +356,7 @@ export const countUsers = async (req: Request, res: Response) => {
 
 export const countAdmins = async (req: Request, res: Response) => {
   try {
-    const count = await User.countDocuments({ role: "admin" });
+    const count = await User.countDocuments({ role: "Admin" });
     return res.status(200).json({ count });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });

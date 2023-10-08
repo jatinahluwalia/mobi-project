@@ -37,15 +37,19 @@ const UpdateProductForm = ({ name, detail, price, _id }: Props) => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: Schema) => {
-    try {
-      await axios.put(`/api/product/${_id}`, data);
-      toast.success("Product updated");
-      navigate("/dashboard/products");
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      console.log(axiosError);
-    }
+  const onSubmit = (data: Schema) => {
+    const promise = axios.put(`/api/product/${_id}`, data);
+    toast.promise(promise, {
+      loading: "Updating product...",
+      success: () => {
+        navigate("/dashboard/products");
+        return "Product updated.";
+      },
+      error: (error) => {
+        const axiosError = error as AxiosError<{ error: string }>;
+        return axiosError.response?.data.error || "Error occurred";
+      },
+    });
   };
   return (
     <Box

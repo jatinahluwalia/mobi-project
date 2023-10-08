@@ -129,18 +129,16 @@ const SignupForm = ({ url }: Props) => {
           ),
         }}
       />
-      {!url.includes("admin") && (
-        <Typography variant="body2">
-          Already have an account?
-          <Link
-            onClick={() => navigate("/login")}
-            className="cursor-pointer"
-            marginLeft={1}
-          >
-            Login
-          </Link>
-        </Typography>
-      )}
+      <Typography variant="body2">
+        Already have an account?
+        <Link
+          onClick={() => navigate("/login")}
+          className="cursor-pointer"
+          marginLeft={1}
+        >
+          Login
+        </Link>
+      </Typography>
       <Button variant="contained" type="submit">
         Signup
       </Button>

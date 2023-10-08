@@ -146,21 +146,27 @@ const SignupAdmin = () => {
     });
   }, [deleteChecked]);
 
-  const onSubmit = async (data: Schema) => {
-    try {
-      await axios.post("/api/user/signup-admin", { ...data, permissions });
-      toast.success("Admin added successfully");
-      navigate("/login");
-    } catch (error) {
-      const axiosError = error as AxiosError<SignupValidationError>;
-      if (axiosError.response?.status === 406) {
-        setError(axiosError.response.data.field, {
-          message: axiosError.response.data.error,
-        });
-      } else {
-        console.log(axiosError);
-      }
-    }
+  const onSubmit = (data: Schema) => {
+    const promise = axios.post("/api/user/signup-admin", {
+      ...data,
+      permissions,
+    });
+    toast.promise(promise, {
+      loading: "Adding admin...",
+      success: () => {
+        navigate("/login");
+        return "Admin added.";
+      },
+      error: (error) => {
+        const axiosError = error as AxiosError<SignupValidationError>;
+        if (axiosError.response?.status === 406) {
+          setError(axiosError.response.data.field, {
+            message: axiosError.response.data.error,
+          });
+        }
+        return axiosError.response?.data.error || "Error occurred";
+      },
+    });
   };
 
   return (

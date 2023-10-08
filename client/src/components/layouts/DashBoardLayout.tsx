@@ -135,13 +135,11 @@ const DashBoardLayout = () => {
                   {user.fullName}
                 </Typography>
                 <Typography color={"text.secondary"} variant="body2">
-                  {user.role === "superadmin" && "Super Admin"}
-                  {user.role === "admin" && "Admin"}
-                  {user.role === "user" && "User"}
+                  {user.role}
                 </Typography>
               </CardContent>
               <List className="w-full">
-                {["superadmin"].includes(String(user?.role)) && (
+                {["Super Admin"].includes(String(user?.role)) && (
                   <ListItem disablePadding>
                     <ListItemButton
                       onClick={() => navigate("/dashboard/signup-admin")}
@@ -162,7 +160,7 @@ const DashBoardLayout = () => {
                     <EditIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>
-                {user?.role !== "superadmin" && (
+                {user?.role !== "Super Admin" && (
                   <Tooltip title="Delete your account" placement="top">
                     <IconButton onClick={() => setOpenDelete(true)}>
                       <DeleteIcon fontSize="inherit" />
@@ -213,12 +211,24 @@ const DashBoardLayout = () => {
                 </ListItemButton>
               </ListItem>
             )}
-            {["superadmin"].includes(String(user?.role)) && (
+            {["Super Admin"].includes(String(user?.role)) && (
               <ListItem disablePadding>
-                <ListItemButton onClick={() => navigate("/dashboard/users")}>
+                <ListItemButton onClick={() => navigate("/dashboard/admins")}>
                   <ListItemText
-                    primary="User Management"
-                    secondary="Manage user permissions"
+                    primary="Admin Management"
+                    secondary="Manage admin permissions"
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
+            {["Super Admin", "Admin"].includes(String(user?.role)) && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => navigate("/dashboard/customers")}
+                >
+                  <ListItemText
+                    primary="Customer Management"
+                    secondary="Manage customers"
                   />
                 </ListItemButton>
               </ListItem>

@@ -16,14 +16,16 @@ import UpdateProduct from "./pages/dashboard/UpdateProduct";
 import AddProduct from "./pages/dashboard/AddProduct";
 import SignupAdmin from "./pages/dashboard/SignupAdmin";
 import Dashboard from "./pages/dashboard/Dashboard";
-import Users from "./pages/dashboard/Users";
-import UserPermissions from "./pages/dashboard/UserUpdate";
+import Admins from "./pages/dashboard/Admins";
+import AdminUpdate from "./pages/dashboard/AdminUpdate";
 import Profile from "./pages/dashboard/Profile";
 import User from "./pages/dashboard/User";
 import Forgot from "./pages/forgot/Forgot";
 import Reset from "./pages/forgot/Reset";
 import { Toaster } from "sonner";
 import Product from "./pages/dashboard/Product";
+import Customers from "./pages/dashboard/Customers";
+import CustomerUpdate from "./pages/dashboard/CustomerUpdate";
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 function App() {
@@ -59,14 +61,16 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="update-self" element={<UpdateSelf />} />
             <Route path="products" element={<Products />} />
-            <Route path="users" element={<Users />} />
+            <Route path="admins" element={<Admins />} />
             <Route path="products/update/:_id" element={<UpdateProduct />} />
             <Route path="products/add" element={<AddProduct />} />
             <Route path="signup-admin" element={<SignupAdmin />} />
-            <Route path="users/update/:id" element={<UserPermissions />} />
+            <Route path="users/update/:_id" element={<AdminUpdate />} />
             <Route path="profile" element={<Profile />} />
             <Route path="profile/:_id" element={<User />} />
             <Route path="products/:_id" element={<Product />} />
+            <Route path="customers" element={<Customers />} />
+            <Route path="customers/update/:_id" element={<CustomerUpdate />} />
           </Route>
         )}
       </Routes>

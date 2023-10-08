@@ -20,21 +20,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { routingVariants } from "../../utils/animation";
-import {
-  Add,
-  AdminPanelSettings,
-  Delete,
-  Edit,
-  Visibility,
-} from "@mui/icons-material";
+import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
 import { toast } from "sonner";
 
-const Users = () => {
+const Admins = () => {
   const [pageNum, setPageNum] = useState(1);
   const navigate = useNavigate();
   const [users, setUsers] = useState<PaginatedUsers | null>(null);
@@ -42,12 +37,15 @@ const Users = () => {
   const [open, setOpen] = useState(false);
   const [openRole, setOpenRole] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
 
   const getData = useCallback(async () => {
-    const res = await axios.get("/api/user/all/?page=" + pageNum);
+    const res = await axios.get(
+      `/api/user/all-admins/?page=${pageNum}&search=${query}`
+    );
     const data = res.data;
     setUsers(data.users);
-  }, [pageNum]);
+  }, [pageNum, query]);
 
   const getUser = async () => {
     const res = await axios.get("/api/user");
@@ -104,8 +102,6 @@ const Users = () => {
     });
   };
 
-  const colors = ["!bg-orange-500", "!bg-purple-500", "!bg-blue-500"];
-
   if (loading)
     return (
       <div className="fixed top-0 left-0 w-full">
@@ -113,7 +109,7 @@ const Users = () => {
       </div>
     );
 
-  if (user && user.role !== "superadmin")
+  if (user && user.role !== "Super Admin")
     return (
       <Typography variant="h3" padding={5}>
         You are not authorized to view this page
@@ -122,20 +118,26 @@ const Users = () => {
   return (
     <motion.section {...routingVariants} className="p-5">
       <Typography variant="h2" marginBottom={5}>
-        Users Management
+        Admins Management
       </Typography>
-      <Stack gap={2} direction={"row"}>
-        {["superadmin"].includes(String(user?.role)) && (
+      <div className="flex gap-2 mb-5">
+        {["Super Admin"].includes(String(user?.role)) && (
           <Button
             onClick={() => navigate("/dashboard/signup-admin")}
             endIcon={<Add />}
-            sx={{ marginBottom: 5 }}
             variant="outlined"
           >
             Add Admin
           </Button>
         )}
-      </Stack>
+        <TextField
+          name="search"
+          variant="outlined"
+          label="Search by name..."
+          onChange={(e) => setQuery(e.target.value)}
+          sx={{ minWidth: 450 }}
+        />
+      </div>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -149,27 +151,21 @@ const Users = () => {
           <TableBody>
             {users?.docs.map(
               (userByID, index) =>
-                userByID.role !== "superadmin" && (
+                userByID.role !== "Super Admin" && (
                   <TableRow
                     key={`${userByID.fullName}-${index}`}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell align="left">
                       <div className="flex items-center gap-5">
-                        <Avatar
-                          className={colors[Math.floor(Math.random() * 3)]}
-                        >
+                        <Avatar className={"!bg-blue-500"}>
                           {userByID.fullName[0]}
                         </Avatar>
                         <Typography>{userByID.fullName}</Typography>
                       </div>
                     </TableCell>
                     <TableCell align="left">{userByID.email}</TableCell>
-                    <TableCell align="left">
-                      {userByID.role === "superadmin" && "Super Admin"}
-                      {userByID.role === "admin" && "Admin"}
-                      {userByID.role === "user" && "User"}
-                    </TableCell>
+                    <TableCell align="left">{userByID.role}</TableCell>
                     <TableCell align="left">
                       <Stack direction={"row"} gap={2}>
                         <Tooltip title="View Profile">
@@ -182,25 +178,18 @@ const Users = () => {
                           </IconButton>
                         </Tooltip>
 
-                        {userByID.role === "admin" ? (
-                          <Tooltip title="Edit User">
-                            <IconButton
-                              onClick={() =>
-                                navigate(
-                                  "/dashboard/users/update/" + userByID._id
-                                )
-                              }
-                            >
-                              <Edit />
-                            </IconButton>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="Make admin">
-                            <IconButton onClick={() => setOpenRole(true)}>
-                              <AdminPanelSettings />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                        <Tooltip title="Edit User">
+                          <IconButton
+                            onClick={() =>
+                              navigate(
+                                "/dashboard/users/update/" + userByID._id
+                              )
+                            }
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+
                         <Dialog
                           open={openRole}
                           onClose={() => setOpenRole(false)}
@@ -284,4 +273,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Admins;

@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: { type: String, default: "user" },
+    role: { type: String, default: "Customer" },
     permissions: [String],
     forgot: { type: Boolean, default: false },
   },

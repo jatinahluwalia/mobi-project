@@ -56,11 +56,11 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           )}
-          {user?.role === "superadmin" && (
+          {user?.role === "Super Admin" && (
             <Card>
               <CardContent>
                 <Link
-                  to={"/dashboard/users"}
+                  to={"/dashboard/admins"}
                   className="flex flex-col items-center"
                 >
                   <Typography variant="h5"> Total Admins</Typography>
@@ -70,18 +70,21 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {(user?.role === "superadmin" || user?.role === "admin") && (
+          {(user?.role === "Super Admin" || user?.role === "Admin") && (
             <Card>
               <CardContent>
-                <div className="flex flex-col items-center">
-                  <Typography variant="h5"> Total Users</Typography>
+                <Link
+                  to={"/dashboard/customers"}
+                  className="flex flex-col items-center"
+                >
+                  <Typography variant="h5"> Total Customers</Typography>
                   <Typography variant="h6">{userCount}</Typography>
-                </div>
+                </Link>
               </CardContent>
             </Card>
           )}
           {user &&
-            user.role !== "superadmin" &&
+            user.role !== "Super Admin" &&
             !user.permissions.includes("product-view") && (
               <Typography variant="h3" marginY={5}>
                 You are not allowed any actions.

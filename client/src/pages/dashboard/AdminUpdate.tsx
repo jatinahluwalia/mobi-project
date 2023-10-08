@@ -26,8 +26,8 @@ import { toast } from "sonner";
 
 const nameRegex = /^[A-Za-z ]+$/;
 
-const UserUpdate = () => {
-  const { id } = useParams();
+const AdminUpdate = () => {
+  const { _id } = useParams();
   const navigate = useNavigate();
   const [userByID, setUserByID] = useState<User | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -72,11 +72,11 @@ const UserUpdate = () => {
 
   const handleSave = (values: Schema) => {
     const promise = axios
-      .put(`/api/user/${id}`, { ...values, permissions })
+      .put(`/api/user/update-admin/${_id}`, { ...values, permissions })
       .then(() => {});
     toast.promise(promise, {
       success: () => {
-        navigate("/dashboard/users");
+        navigate("/dashboard/admins");
         return "User updated";
       },
       loading: "Updating User",
@@ -93,7 +93,7 @@ const UserUpdate = () => {
   };
 
   const getData = useCallback(async () => {
-    const res = await axios.get("/api/user/" + id);
+    const res = await axios.get("/api/user/" + _id);
     const data = res.data;
     setViewChecked(data.user.permissions.includes("product-view"));
     setEditChecked(data.user.permissions.includes("product-edit"));
@@ -103,7 +103,7 @@ const UserUpdate = () => {
     setValue("fullName", data.user.fullName);
     setValue("phone", data.user.phone);
     setUserByID(data.user);
-  }, [id, setValue]);
+  }, [_id, setValue]);
 
   const getUser = async () => {
     const res = await axios.get("/api/user/");
@@ -195,7 +195,7 @@ const UserUpdate = () => {
       </div>
     );
 
-  if (user && user.role !== "superadmin")
+  if (user && user.role !== "Super Admin")
     return (
       <motion.section {...routingVariants} className="p-5 grow">
         <Typography variant="h2" marginY={5}>
@@ -310,4 +310,4 @@ const UserUpdate = () => {
   );
 };
 
-export default UserUpdate;
+export default AdminUpdate;

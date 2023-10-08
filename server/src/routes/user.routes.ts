@@ -9,10 +9,13 @@ import {
   profile,
   resetPass,
   showAll,
+  showAllAdmins,
+  showAllCustomers,
   showOne,
   signup,
   signupAdmin,
   toAdmin,
+  updateOtherAdmin,
   updateOtherUser,
   updateSelf,
 } from "../controllers/user.controller";
@@ -269,11 +272,116 @@ userRouter.post("/reset", verifyForgetToken, resetPass);
  */
 userRouter.get("/all", checkAuth, isSuperAdmin, showAll);
 
+/**
+ * @openapi
+ * /api/user/all-admins:
+ *  get:
+ *    summary: Get all admins
+ *    description: Get all admins
+ *    security:
+ *      bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: All admins retrieved successfully
+ *      401:
+ *        description: Unauthorized
+ *      403:
+ *        description: Forbidden
+ *      500:
+ *        description: Some error occurred
+ */
+
+userRouter.get("/all-admins", checkAuth, isSuperAdmin, showAllAdmins);
+
+/**
+ * @openapi
+ * /api/user/all-users:
+ *  get:
+ *    summary: Get all users
+ *    description: Get all users
+ *    security:
+ *      bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: All users retrieved successfully
+ *      401:
+ *        description: Unauthorized
+ *      403:
+ *        description: Forbidden
+ *      500:
+ *        description: Some error occurred
+ */
+
+userRouter.get(
+  "/all-customers",
+  checkAuth,
+  isAdminOrSuperAdmin,
+  showAllCustomers
+);
+
+/**
+ * @openapi
+ * /api/user/count-customers:
+ *  get:
+ *    summary: Count all customers
+ *    description: Count all customers
+ *    security:
+ *      bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: All customers counted successfully
+ *      401:
+ *        description: Unauthorized
+ *      403:
+ *        description: Forbidden
+ *      500:
+ *        description: Some error occurred
+ */
+
 userRouter.get("/count-users", checkAuth, isAdminOrSuperAdmin, countUsers);
+
+/**
+ * @openapi
+ * /api/user/count-admins:
+ *  get:
+ *    summary: Count all admins
+ *    description: Count all admins
+ *    security:
+ *      bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: All admins counted successfully
+ *      401:
+ *        description: Unauthorized
+ *      403:
+ *        description: Forbidden
+ *      500:
+ *        description: Some error occurred
+ */
 
 userRouter.get("/count-admins", checkAuth, isSuperAdmin, countAdmins);
 
+/**
+ * @openapi
+ * /api/user/to-admin:
+ *  put:
+ *    summary: Make user admin
+ *    description: Make user admin
+ *    security:
+ *      bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: User updated successfully
+ *      401:
+ *        description: Unauthorized
+ *      403:
+ *        description: Forbidden
+ *      500:
+ *        description: Some error occurred
+ */
+
 userRouter.put("/to-admin", checkAuth, isSuperAdmin, toAdmin);
+userRouter.put("/update-admin/:id", checkAuth, isSuperAdmin, updateOtherAdmin);
 
 /**
  * @openapi
@@ -337,7 +445,7 @@ userRouter.get("/:_id", checkAuth, isSuperAdmin, showOne);
  *      500:
  *        description: Some error occurred
  */
-userRouter.put("/:id", checkAuth, isSuperAdmin, updateOtherUser);
+userRouter.put("/:id", checkAuth, isAdminOrSuperAdmin, updateOtherUser);
 
 /**
  * @openapi
@@ -364,6 +472,6 @@ userRouter.put("/:id", checkAuth, isSuperAdmin, updateOtherUser);
  *      500:
  *        description: Some error occurred
  */
-userRouter.delete("/:id", checkAuth, isSuperAdmin, deleteOtherUser);
+userRouter.delete("/:id", checkAuth, isAdminOrSuperAdmin, deleteOtherUser);
 
 export default userRouter;

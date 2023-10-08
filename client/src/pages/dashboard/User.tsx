@@ -51,7 +51,7 @@ const User = () => {
       </div>
     );
 
-  if (authUser && authUser.role !== "superadmin")
+  if (authUser && authUser.role !== "Super Admin")
     return (
       <Typography variant="h3" padding={5}>
         You are not authorized to view this page
@@ -67,7 +67,7 @@ const User = () => {
           {user?.fullName}
         </Typography>
         <Typography variant="body2" color="text.secondary" fontWeight={500}>
-          {user?.role === "superadmin"
+          {user?.role === "Super Admin"
             ? "Super Admin"
             : `${user?.role[0].toUpperCase()}${user?.role.slice(1)}`}
         </Typography>

@@ -7,7 +7,7 @@ export const isAdmin = async (
 ) => {
   try {
     // @ts-ignore
-    if (req.user.role !== "admin") {
+    if (req.user.role !== "Admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     next();
@@ -24,7 +24,7 @@ export const isSuperAdmin = async (
 ) => {
   try {
     // @ts-ignore
-    if (req.user.role !== "superadmin") {
+    if (req.user.role !== "Super Admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     next();
@@ -41,7 +41,7 @@ export const isAdminOrSuperAdmin = async (
 ) => {
   try {
     // @ts-ignore
-    if (req.user.role === "admin" || req.user.role === "superadmin") {
+    if (req.user.role === "Admin" || req.user.role === "Super Admin") {
       return next();
     }
     return res.status(401).json({ error: "Unauthorized" });
