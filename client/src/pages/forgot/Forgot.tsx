@@ -9,7 +9,7 @@ const Forgot = () => {
   const schema = z.object({
     email: z
       .string()
-      .nonempty("Please enter an email")
+      .min(1, "Please enter an email")
       .email("Please enter a valid email")
       .max(50, "Email can't be larger than 50 characters."),
   });

@@ -45,7 +45,7 @@ const AdminUpdate = () => {
       .max(50, "Email cannot be larger than 50 characters"),
     fullName: z
       .string()
-      .nonempty("Please enter your name.")
+      .min(1, "Please enter your name.")
       .max(25, "Name cannot be larger than 25 characters.")
       .regex(nameRegex, "Name can only contain letters"),
     phone: z

@@ -21,7 +21,6 @@ export const checkAuth = async (
     req.user = user;
     next();
   } catch (error) {
-    console.log(error);
     return res.status(401).json({ error: "Please authenticate" });
   }
 };

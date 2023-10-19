@@ -20,10 +20,10 @@ const UpdateProductForm = ({ name, detail, price, _id, hero }: Props) => {
   const navigate = useNavigate();
 
   const schema = z.object({
-    name: z.string().nonempty("Name cannot be empty"),
-    detail: z.string().nonempty("Detail cannot be empty"),
+    name: z.string().min(1, "Name cannot be empty"),
+    detail: z.string().min(1, "Detail cannot be empty"),
     price: z.number({ invalid_type_error: "Please enter a price" }),
-    hero: z.string().nonempty("Hero cannot be empty").max(50, "Hero too long"),
+    hero: z.string().min(1, "Hero cannot be empty").max(50, "Hero too long"),
   });
   type Schema = z.infer<typeof schema>;
   const {

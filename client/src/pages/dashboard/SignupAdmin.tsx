@@ -37,12 +37,12 @@ const SignupAdmin = () => {
       .max(50, "Email cannot be larger than 50 characters"),
     password: z
       .string()
-      .nonempty("Please enter a password")
+      .min(1, "Please enter a password")
       .min(8, "Minimum 8 characters")
       .max(32, "Maximum 32 characters"),
     fullName: z
       .string()
-      .nonempty("Please enter a name")
+      .min(1, "Please enter a name")
       .max(25, "Name cannot be larger than 25 characters.")
       .regex(nameRegex, "Name can only contain letters"),
     phone: z

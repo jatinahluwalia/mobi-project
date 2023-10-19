@@ -26,12 +26,12 @@ const Reset = () => {
     .object({
       password: z
         .string()
-        .nonempty("Please enter a password")
+        .min(1, "Please enter a password")
         .min(8, "Minimum 8 characters")
         .max(32, "Maximum 32 characters"),
       confirmPassword: z
         .string()
-        .nonempty("Please confirm your password")
+        .min(1, "Please confirm your password")
         .min(8, "Minimum 8 characters")
         .max(32, "Maximum 32 characters"),
     })
@@ -128,7 +128,7 @@ const Reset = () => {
                 </IconButton>
               ),
             }}
-            type={`${isVisible ? "text" : "password"}`}
+            type={`${isVisibleConfirm ? "text" : "password"}`}
           />
         </CardContent>
         <CardActions>
