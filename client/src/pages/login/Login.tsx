@@ -72,7 +72,7 @@ const Login = () => {
         } else {
           console.log(axiosError.response?.data.error);
         }
-        toast.error(axiosError.response?.data.error);
+        toast.error(axiosError.response?.data.error || "Some error occurred, please try again after some time.");
       });
   };
 
