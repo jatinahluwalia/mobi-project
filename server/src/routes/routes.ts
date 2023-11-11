@@ -12,4 +12,8 @@ router.use("/user", userRouter);
 
 router.use("/product", productRouter);
 
+router.post("/shiprocket", (_req, res) => {
+  return res.status(200).json("Hello");
+});
+
 export default router;
